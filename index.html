@@ -1389,7 +1389,7 @@ async function entrar(mat, pw, auto){
   go.disabled = false; go.textContent = "Ver mis calificaciones";
   if (!rec){
     if (auto){ olvidarCred(); document.getElementById("mat").value = ""; document.getElementById("pw").value = ""; err.textContent = "Tus datos guardados ya no funcionan. Escríbelos de nuevo."; }
-    else err.textContent = "La matrícula o la contraseña no son correctas. Revisa y vuelve a intentar.";
+    else err.textContent = "La matrícula o la contraseña no son correctas. Revisa y vuelve a intentar. Si no la recuerdas, pide tu contraseña al maestro Miguel.";
     return;
   }
   if (!auto){ if (document.getElementById("rem").checked) guardarCred(mat, pw); else olvidarCred(); }
@@ -1518,12 +1518,13 @@ function pintarVivo(r, chico){
   const top = r.lugar != null && r.lugar <= 10;
   h += '<div class="vv-top"><div class="vv-big n-' + notaCls(r.promedio) + '">' + notaTxt(r.promedio) + '</div><div class="vv-tx"><b>' +
     (top ? "Estás en el top 10: lugar " + r.lugar : "Vas en el lugar " + r.lugar) + '</b><span>de ' + r.de + ' en tu grupo</span></div></div>';
-  const nCap = r.materias.filter(function(m){ return m.exp > 0; }).length, nTot = r.materias.length;
+  const nCap = r.materias.filter(function(m){ return m.exp > 0; }).length;
   h += '<p class="vv-s">Esta es tu calificación del <b>' + esc(PARCIAL_VIVO.toLowerCase()) + '</b>, no tu promedio del semestre ni tu calificación final. Sale de tus sellos de actividades y de actitud y valores, y solo cuenta las materias que tu maestro ya capturó. Cambia cada vez que captura.</p>';
   const gV = r.grupo || group;
   const nomsV = (MIGUEL[gV] || []).filter(function(x){ return x !== "Mentoría escolar"; }).map(normTxt);
   let proxG = null; try { proxG = proxCaptura(gV, nomsV); } catch(e){}
   h += proxG ? '<div class="vv-prox"><b>Próxima actualización:</b> ' + diaProx(proxG) + ', después de clases.</div>' : '<div class="vv-prox"><b>Próxima actualización:</b> cuando el maestro capture de nuevo.</div>';
+  const nTot = Math.max(nomsV.length, r.materias.length);
   if (!chico) h += '<div class="vv-cap">Materias capturadas: ' + nCap + ' de ' + nTot + '</div>';
   h += '<ul class="vv-m">' + r.materias.filter(function(m){ return m.exp > 0; }).map(function(m){
     let li = '<li><div class="r1"><span>' + esc(m.nombre) + '</span><span class="n-' + notaCls(m.c) + '">' + notaTxt(m.c) + '</span></div>' +
