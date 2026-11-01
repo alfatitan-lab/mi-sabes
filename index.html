@@ -1238,7 +1238,11 @@ const CRED_KEY = "mi-sabes-datos";
 function leerCred(){ try{ const c = JSON.parse(localStorage.getItem(CRED_KEY) || "null"); return c && c.m && c.p ? c : null; }catch(e){ return null; } }
 function guardarCred(m, p){ try{ localStorage.setItem(CRED_KEY, JSON.stringify({m:m, p:p})); }catch(e){} }
 function olvidarCred(){ try{ localStorage.removeItem(CRED_KEY); }catch(e){} }
-let lastId = "";
+let lastId = "", lastMat = "", existeMat = false;
+function contarFallo(){
+  if (!COUNTER_URL || !existeMat || !lastMat) return;
+  try{ fetch(COUNTER_URL, {method:"POST", mode:"no-cors", keepalive:true, body:JSON.stringify({ev:"fallo", m:lastMat})}).catch(function(){}); }catch(e){}
+}
 function contar(rec, auto){
   if (!COUNTER_URL) return;
   try{ fetch(COUNTER_URL, {method:"POST", mode:"no-cors", keepalive:true, body:JSON.stringify({ev:"ingreso", id:lastId, g:GRUPO_DE[rec.g] || "", auto:!!auto})}).catch(function(){}); }catch(e){}
@@ -1250,9 +1254,10 @@ async function abrir(matRaw, pwRaw){
   const mat = matRaw.replace(/\s+/g,"").toUpperCase();
   const pw = pwRaw.replace(/[\s\-]/g,"").toUpperCase();
   const id = hex(await crypto.subtle.digest("SHA-256", enc.encode("id|" + mat))).slice(0,16);
-  lastId = id;
+  lastId = id; lastMat = mat; existeMat = false;
   const rec = DATA.r.find(function(x){ return x.i === id; });
   if (!rec) return null;
+  existeMat = true;
   const base = await crypto.subtle.importKey("raw", enc.encode(mat + "|" + pw), "PBKDF2", false, ["deriveKey"]);
   const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(rec.s), iterations:DATA.it, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
   try{ const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(rec.v)}, key, b64(rec.c)); return JSON.parse(dec.decode(pt)); }
@@ -1451,7 +1456,7 @@ async function entrar(mat, pw, auto){
   go.disabled = false; go.textContent = "Ver mis calificaciones";
   if (!rec){
     if (auto){ olvidarCred(); document.getElementById("mat").value = ""; document.getElementById("pw").value = ""; err.textContent = "Tus datos guardados ya no funcionan. Escríbelos de nuevo."; }
-    else err.textContent = "La matrícula o la contraseña no son correctas. Revisa y vuelve a intentar. Si no la recuerdas, pide tu contraseña al maestro Miguel.";
+    else { contarFallo(); err.textContent = "La matrícula o la contraseña no son correctas. Revisa y vuelve a intentar. Si no la recuerdas, pide tu contraseña al maestro Miguel."; }
     return;
   }
   if (!auto){ if (document.getElementById("rem").checked) guardarCred(mat, pw); else olvidarCred(); }
