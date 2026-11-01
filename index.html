@@ -264,6 +264,34 @@
   .grad .gd{margin-top:4px;font-size:13px;color:var(--muted);}
   .grad .gf{margin-top:10px;font-family:var(--font-display);font-weight:800;font-size:17px;line-height:1.2;text-wrap:balance;}
   .grad .gs{margin-top:8px;font-size:12.5px;color:var(--muted);}
+
+  /* graduación: tarjeta marino y dorada con ruta de semestres */
+  .grad{--g1:#F7E7A1;--g2:#D4AF37;--g3:#8F6B14;--s2:#9DB0DC;--s3:#5B6E9E;--gt:#ECE9E1;--gm:#8FA3D1;
+    --serif:"Iowan Old Style","Palatino Linotype","Noto Serif",Cambria,"Times New Roman",serif;
+    padding:20px 20px 18px;border:1px solid #6b5a1f;color:var(--gt);
+    background:radial-gradient(120% 90% at 85% 0%,#1B2C5E 0%,#0E1B3D 45%,#070D1F 100%);box-shadow:inset 0 0 0 1px rgba(212,175,55,.35);}
+  .grad::before{display:block;content:"";position:absolute;inset:0 0 auto 0;height:5px;background:repeating-linear-gradient(90deg,var(--blue) 0 22px,var(--mari) 22px 44px,#EAF0FF 44px 66px);}
+  .grad::after{content:"";position:absolute;inset:6px;border:1px solid rgba(212,175,55,.26);border-radius:11px;pointer-events:none;}
+  .grad .gk{margin-top:0;color:var(--s2);font-size:11.5px;letter-spacing:.26em;font-weight:600;}
+  .grad .gn{margin-top:8px;gap:10px;}
+  .grad .gn b{font-family:var(--serif);font-weight:700;font-size:70px;line-height:.95;letter-spacing:-.02em;font-variant-numeric:lining-nums;background:linear-gradient(180deg,var(--g1),var(--g2) 48%,var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .grad .gn span{font-family:var(--serif);font-weight:400;font-size:19px;color:var(--gt);padding-bottom:6px;}
+  .grad .gd{margin-top:6px;font-size:12.5px;color:var(--gm);}
+  .grad .gf{margin-top:6px;padding-top:12px;border-top:1px solid rgba(212,175,55,.35);font-family:var(--serif);font-style:italic;font-weight:400;font-size:17px;line-height:1.25;color:var(--gt);}
+  .grad .gs{font-size:12px;color:var(--gm);line-height:1.4;}
+  .gruta{position:relative;display:flex;justify-content:space-between;margin:16px 0 22px;}
+  .gruta::before{content:"";position:absolute;left:17px;right:17px;top:14px;height:2px;background:rgba(157,176,220,.3);}
+  .gruta .gfill{position:absolute;left:17px;top:14px;height:2px;background:linear-gradient(90deg,var(--g3),var(--g2),var(--g1));}
+  .gruta .rn{position:relative;width:34px;display:flex;flex-direction:column;align-items:center;}
+  .gruta .rn i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font:700 11.5px/1 system-ui,sans-serif;font-style:normal;}
+  .gruta .rn.hecho i{background:linear-gradient(180deg,var(--g1),var(--g3));color:#201803;}
+  .gruta .rn.ahora i{background:#070D1F;border:2px solid var(--g1);color:var(--g1);box-shadow:0 0 0 4px rgba(212,175,55,.2),0 0 16px rgba(247,231,161,.5);animation:gpulso 2.6s ease-in-out infinite;}
+  .gruta .rn.falta i{background:#070D1F;border:1.5px solid rgba(157,176,220,.5);color:var(--s3);}
+  .gruta .rn.meta i{width:34px;height:28px;border-radius:0;background:none;}
+  .gruta .rn em{margin-top:7px;font-style:normal;font-size:10.5px;color:var(--gm);white-space:nowrap;}
+  .gruta .rn.ahora em{color:var(--g1);font-weight:700;}
+  @keyframes gpulso{50%{box-shadow:0 0 0 7px rgba(212,175,55,.08),0 0 22px rgba(247,231,161,.7);}}
+  @media (prefers-reduced-motion:reduce){.gruta .rn.ahora i{animation:none;}}
   /* avisos e instalación */
   .aviso{margin-top:14px;padding:12px 14px;border:1.5px solid var(--gold-line);border-left-width:6px;border-radius:12px;background:linear-gradient(135deg,var(--gold-a) 0%,var(--gold-b) 100%);font-size:14px;}
   .aviso b{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:2px;}
@@ -425,6 +453,7 @@
       <div class="gk">Para tu graduación</div>
       <div class="gn"><b id="gDias">–</b><span id="gU">días</span></div>
       <div class="gd" id="gFecha"></div>
+      <div class="gruta" id="gRuta" role="img"></div>
       <p class="gf" id="gFrase"></p>
       <p class="gs" id="gSub"></p>
     </section>
@@ -866,18 +895,51 @@ function evHTML(x, withWhen, today){
 const GRAD = {"5to":{f:"2027-06-04", despues:1}, "3ro":{f:"2028-06-02", despues:3}, "1ro":{f:"2029-06-01", despues:5}};
 function fraseGrad(g, dias){
   if (dias <= 0) return "Terminas esto. Empieza lo demás.";
-  if (dias <= 30) return "Pocos días. Que cuenten.";
-  if (dias <= 100) return "Ya se ve. Sigue.";
+  if (dias <= 15) return "Pocos días. Que cuenten.";
+  if (dias <= 50) return "Ya se ve. Sigue.";
   if (g === "5to") return "Hoy también cuenta, aunque no lo parezca.";
   if (g === "3ro") return "Ni te detengas ni te apures. Camina.";
   return "Falta mucho. Tienes tiempo. Úsalo.";
 }
+const VUELTA_GRAD = new Date(2027, 1, 2), BASE_INI_GRAD = new Date(2026, 7, 17), BASE_FIN_GRAD = new Date(2027, 5, 25);
+/* Día de clase del calendario del periodo 2026-27; los años siguientes se estiman con el mismo calendario corrido 52 semanas. */
+function diaDeClaseGrad(d){
+  if (d.getDay() < 1 || d.getDay() > 5) return false;
+  let b = d, k = 0;
+  while (b > BASE_FIN_GRAD){ b = addDays(b, -364); if (++k > 10) return false; }
+  if (b < BASE_INI_GRAD) return false;
+  if (b > END && b < VUELTA_GRAD) return false;
+  const key = iso(b);
+  if (HOLIDAYS[key]) return false;
+  for (let i = 0; i < EVENTS.length; i++){ const e = EVENTS[i]; if (e.k === "sin" && e.s >= "2027-02-02" && key >= e.s && key <= e.e) return false; }
+  return true;
+}
+function diasClaseGrad(fIso, remDays){
+  const fin = fromIso(fIso), hoy = startOfToday(), now = new Date();
+  let ini = (now.getHours()*60 + now.getMinutes() >= 840) ? addDays(hoy, 1) : hoy;
+  if (ini < VUELTA_GRAD) ini = VUELTA_GRAD;
+  let n = 0;
+  for (let d = ini; d <= fin; d = addDays(d, 1)) if (diaDeClaseGrad(d)) n++;
+  return n + (remDays > 0 ? remDays : 0);
+}
+const CHECK_GRAD = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#201803" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const BIRRETE_GRAD = '<svg width="34" height="30" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="gcapG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7E7A1"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#8F6B14"/></linearGradient></defs><path d="M17 31v10c0 5 30 5 30 0V31l-15 7.5z" fill="url(#gcapG)" opacity=".8"/><path d="M32 10 61 23 32 36 3 23z" fill="url(#gcapG)"/><path d="M32 36V23l23 2.2" fill="none" stroke="#2a1f05" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/><path d="M55 25.2V43" stroke="url(#gcapG)" stroke-width="2" stroke-linecap="round"/><path d="M55 41l-2.5 8h5z" fill="url(#gcapG)"/><circle cx="32" cy="23" r="2" fill="url(#gcapG)"/></svg>';
+function rutaGrad(sem){
+  let h = '<div class="gfill" style="width:calc((100% - 34px) * ' + ((sem - 1) / 6) + ')"></div>';
+  for (let i = 1; i <= 6; i++){
+    const cls = i < sem ? "hecho" : (i === sem ? "ahora" : "falta");
+    h += '<div class="rn ' + cls + '"><i>' + (cls === "hecho" ? CHECK_GRAD : i) + '</i><em>' + (cls === "ahora" ? "Aquí vas" : i + ".º") + '</em></div>';
+  }
+  return h + '<div class="rn meta"><i>' + BIRRETE_GRAD + '</i><em>Meta</em></div>';
+}
 function renderGrad(remDays){
-  const G = GRAD[group], d = fromIso(G.f), dias = dayDiff(d, startOfToday());
-  document.getElementById("gDias").textContent = Math.max(0, dias);
-  document.getElementById("gU").textContent = dias === 1 ? "día" : "días";
+  const G = GRAD[group], d = fromIso(G.f), cal = dayDiff(d, startOfToday());
+  const dias = cal <= 0 ? 0 : Math.round(diasClaseGrad(G.f, remDays));
+  document.getElementById("gDias").textContent = String(dias);
+  document.getElementById("gU").textContent = dias === 1 ? "día de clase" : "días de clase";
   document.getElementById("gFecha").textContent = "Hasta el viernes " + d.getDate() + " de " + MESES_L[d.getMonth()] + " de " + d.getFullYear() + " (fecha estimada)";
   document.getElementById("gFrase").textContent = fraseGrad(group, dias);
+  const semG = Number(group.charAt(0)), ruta = document.getElementById("gRuta"); ruta.innerHTML = rutaGrad(semG); ruta.setAttribute("aria-label", "Vas en el semestre " + semG + " de 6");
   const sem = G.despues;
   document.getElementById("gSub").textContent = (remDays > 0 ? "Del semestre actual te quedan " + fmtDays(remDays) + (remDays <= 1 ? " día" : " días") + " de clase. " : "Este semestre ya terminó. ") +
     "Después te " + (sem === 1 ? "falta 1 semestre más." : "faltan " + sem + " semestres más.");
