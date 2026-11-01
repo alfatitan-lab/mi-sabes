@@ -250,6 +250,8 @@
   .ss.off .bigss{color:var(--muted);font-size:22px;}
   .ss svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
   .ss .track{height:10px;margin-top:10px;}
+  .firma{margin:26px 0 0;text-align:center;font-size:12px;line-height:1.5;color:var(--muted);}
+  .firma b{color:var(--fg);font-weight:700;}
   .foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6;}
   @media (max-width:380px){ .uac{grid-template-columns:minmax(0,1fr);} .cells,.heads .cells{grid-template-columns:repeat(4,minmax(0,1fr));} .heads{grid-template-columns:minmax(0,1fr);} .ev{grid-template-columns:54px minmax(0,1fr);} }
 
@@ -268,7 +270,12 @@
   .aviso b{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:2px;}
   .aviso span{overflow-wrap:anywhere;}
   .vivo{margin-top:18px;padding:14px 16px;border:1.5px solid var(--blue);border-radius:14px;background:var(--card);}
-  .vv-k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--blue);}
+  .vv-k{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--blue);}
+  .vv-pill{display:inline-block;padding:3px 9px;border-radius:99px;background:var(--orange);color:#fff;font-size:11px;letter-spacing:.06em;}
+  .vv-cap{margin-top:12px;font-size:13px;font-weight:700;}
+  .sepa{margin-top:30px;padding-top:12px;border-top:2px solid var(--fg);}
+  .sepa h2{font-size:19px;margin:0;}
+  .sepa p{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5;}
   .vv-top{display:flex;align-items:center;gap:14px;margin-top:6px;}
   .vv-big{font-family:var(--font-display);font-weight:800;font-size:56px;line-height:1;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;}
   .n-b{color:var(--red);} .n-m{color:var(--orange);} .n-g{color:var(--ok);} .n-t{color:var(--blue);}
@@ -291,6 +298,25 @@
   .vv-top10 .nm{flex:1;min-width:0;} .vv-top10 .nt{font-weight:800;font-variant-numeric:tabular-nums;}
   .vv-link{display:inline-block;margin-top:10px;font-weight:700;font-size:13px;color:var(--blue);}
   .vv-at{margin-top:10px;font-size:11.5px;color:var(--muted);}
+  .vv-prox{margin-top:10px;padding:8px 10px;border-radius:10px;background:var(--blue-soft);font-size:12.5px;line-height:1.45;}
+  .vv-prox b{font-weight:800;}
+  .vv-pie{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:14px;}
+  .vv-pie .vv-at{margin:0;flex:0 1 auto;}
+  .sello{flex:none;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:7px 11px 6px;border:3px double var(--blue);border-radius:8px;color:var(--blue);transform:rotate(-6deg);opacity:0;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;mix-blend-mode:multiply;font-family:var(--font-display);}
+  .sello .s1{font-size:9px;letter-spacing:.22em;font-weight:800;text-transform:uppercase;}
+  .sello .s2{font-size:13.5px;line-height:1.1;font-weight:800;letter-spacing:.01em;}
+  .sello .s3{font-size:8.5px;letter-spacing:.14em;font-weight:700;text-transform:uppercase;border-top:1.5px solid var(--blue);padding-top:3px;margin-top:2px;}
+  .sello.ya{opacity:.92;}
+  .sello.cae{animation:selloCae .62s cubic-bezier(.2,.8,.3,1) both;}
+  @keyframes selloCae{
+    0%{opacity:0;transform:rotate(-16deg) scale(2.6);}
+    48%{opacity:.95;transform:rotate(-6deg) scale(.9);}
+    64%{transform:rotate(-6deg) scale(1.05);}
+    100%{opacity:.92;transform:rotate(-6deg) scale(1);}
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .sello{mix-blend-mode:normal;} }
+  :root[data-theme="dark"] .sello{mix-blend-mode:normal;}
+  @media (prefers-reduced-motion: reduce){ .sello.cae{animation:none;opacity:.92;} }
   .inst{margin-top:18px;padding:14px 16px;border:1.5px solid var(--blue);border-radius:14px;background:var(--blue-soft);}
   .inst .instrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;}
   .inst .instrow .go{margin-top:0;}
@@ -486,6 +512,7 @@
     <div id="view" hidden></div>
     <div class="foot">Esta página es una consulta rápida. Tus calificaciones oficiales están en tu historial académico de control escolar. Si algo no coincide, avísale a tu maestro.</div>
   </section>
+<p class="firma">Página desarrollada por <b>Miguel Ángel Núñez Patiño</b><br>docente de SABES La Palma</p>
 </div>
 
 <nav class="tabs" aria-label="Secciones">
@@ -691,7 +718,9 @@ function aplicarAjustes(rows){
     const m = /^graduacion_(1ro|3ro|5to)$/.exec(normTxt(r[0]));
     const f = fechaIso(r[1]);
     if (m && f && GRAD[m[1]]) GRAD[m[1]].f = f;
+    if (normTxt(r[0]) === "parcial_vivo" && String(r[1] || "").trim()) PARCIAL_VIVO = String(r[1]).trim();
   });
+  if (typeof vivoR !== "undefined" && vivoR) dibujarVivo();
 }
 function aplicarContenido(c){
   if (!c) return;
@@ -1299,7 +1328,7 @@ function pintar(rec){
   const r = calcular(rec);
   const primer = rec.n.split(" ")[0];
   const top = rec.top || {};
-  let h = '<div class="hello">Hola, <b>' + esc(primer) + '</b>. ' + esc(rec.g) + '.</div><section class="hero" aria-live="polite">';
+  let h = '<div class="hello">Hola, <b>' + esc(primer) + '</b>. ' + esc(rec.g) + '.</div><div id="vivoDet"></div><div id="vivoSep"></div><section class="hero" aria-live="polite">';
   if (r.general !== null){
     h += '<div class="big sm">' + prom(r.general, top.g) + '</div><div class="unit">Promedio general</div>';
     h += '<div class="until">Cuenta las ' + r.nGeneral + ' materias que ya tienen los tres parciales.</div>';
@@ -1335,7 +1364,7 @@ document.getElementById("tog").addEventListener("click", function(e){
 });
 function mostrarDatos(rec, auto){
   if (GRUPO_DE[rec.g]) setGroup(GRUPO_DE[rec.g]);
-  form.hidden = true; view.innerHTML = '<div id="vivoDet"></div>' + pintar(rec); view.hidden = false; window.scrollTo(0,0);
+  form.hidden = true; view.innerHTML = pintar(rec); view.hidden = false; window.scrollTo(0,0);
   document.getElementById("salir").addEventListener("click", function(){ view.innerHTML = ""; view.hidden = true; form.hidden = false; prellenar(); window.scrollTo(0,0); });
   const ol = document.getElementById("olvidar");
   if (ol) ol.addEventListener("click", function(){ olvidarCred(); view.innerHTML = ""; view.hidden = true; form.hidden = false; prellenar(); window.scrollTo(0,0); });
@@ -1438,6 +1467,7 @@ try { if ("serviceWorker" in navigator && location.protocol === "https:") naviga
 const SELLOS_DEMO = null; // solo la versión previa muestra datos de ejemplo
 const SELLOS_KEY = "mi-sabes-sellos";
 let vivoR = null;
+let PARCIAL_VIVO = "Tercer parcial"; // se puede cambiar desde la pestaña Ajustes de la hoja (clave: parcial_vivo)
 function idDeMatricula(mat){ return crypto.subtle.digest("SHA-256", enc.encode("id|" + String(mat).replace(/\s+/g,"").toUpperCase())).then(function(b){ return hex(b).slice(0,16); }); }
 function notaCls(c){ return c == null ? "" : c >= 10 ? "t" : c >= 8 ? "g" : c >= 6 ? "m" : "b"; }
 function notaTxt(c){ return c == null ? "–" : (Number.isInteger(c) ? String(c) : c.toFixed(1)); }
@@ -1446,18 +1476,45 @@ function diaCorto(f){
   const ses = f.indexOf("~") >= 0 ? Number(f.split("~")[1]) : 1, p = f.slice(0,10).split("-").map(Number), d = new Date(p[0], p[1]-1, p[2]);
   return DIAS_C[d.getDay()] + " " + d.getDate() + " " + MESES_C[d.getMonth()] + (ses > 1 ? " (" + ses + "ª sesión)" : "");
 }
+function proxCaptura(g, nombres){
+  const now = new Date(), hoy = startOfToday(), nowMin = now.getHours() * 60 + now.getMinutes();
+  for (let k = 0; k <= 70; k++){
+    const d = addDays(hoy, k);
+    if (d > END) break;
+    if (!esEscolar(d)) continue;
+    let fin = -1;
+    buildRows(d, g).forEach(function(x){
+      if (x.t && x.cls !== "skip" && x.cls !== "res" && x.cls !== "brk" && nombres.indexOf(normTxt(x.t)) >= 0) fin = Math.max(fin, x.end);
+    });
+    if (fin < 0) continue;
+    if (k === 0 && nowMin >= fin) continue;
+    return {d:d, hoy:k === 0, manana:k === 1};
+  }
+  return null;
+}
+function diaProx(p){
+  if (p.hoy) return "hoy";
+  if (p.manana) return "mañana, " + DIAS_L[p.d.getDay()] + " " + p.d.getDate() + " de " + MESES_L[p.d.getMonth()];
+  return "el " + DIAS_L[p.d.getDay()] + " " + p.d.getDate() + " de " + MESES_L[p.d.getMonth()];
+}
 function pintarVivo(r, chico){
-  let h = '<section class="vivo" aria-live="polite"><div class="vv-k">Tu parcial en vivo</div>';
-  if (r.promedio == null){ return h + '<p class="vv-s">Tu maestro todavía no ha capturado sellos de este parcial.</p></section>'; }
+  let h = '<section class="vivo" aria-live="polite"><div class="vv-k"><span>' + esc(PARCIAL_VIVO) + '</span><span class="vv-pill">En vivo</span></div>';
+  if (r.promedio == null){ return h + '<p class="vv-s">Tu maestro todavía no ha capturado sellos de este parcial. Cuando lo haga, aquí verás tu calificación.</p></section>'; }
   const top = r.lugar != null && r.lugar <= 10;
   h += '<div class="vv-top"><div class="vv-big n-' + notaCls(r.promedio) + '">' + notaTxt(r.promedio) + '</div><div class="vv-tx"><b>' +
     (top ? "Estás en el top 10: lugar " + r.lugar : "Vas en el lugar " + r.lugar) + '</b><span>de ' + r.de + ' en tu grupo</span></div></div>';
-  h += '<p class="vv-s">Es el promedio de tus sellos y tu actitud en las materias que tu maestro ya capturó. Cambia cada vez que captura.</p>';
+  const nCap = r.materias.filter(function(m){ return m.exp > 0; }).length, nTot = r.materias.length;
+  h += '<p class="vv-s">Esta es tu calificación del <b>' + esc(PARCIAL_VIVO.toLowerCase()) + '</b>, no tu promedio del semestre ni tu calificación final. Sale de tus sellos de actividades y de actitud y valores, y solo cuenta las materias que tu maestro ya capturó. Cambia cada vez que captura.</p>';
+  const gV = r.grupo || group;
+  const nomsV = (MIGUEL[gV] || []).filter(function(x){ return x !== "Mentoría escolar"; }).map(normTxt);
+  let proxG = null; try { proxG = proxCaptura(gV, nomsV); } catch(e){}
+  h += proxG ? '<div class="vv-prox"><b>Próxima actualización:</b> ' + diaProx(proxG) + ', después de clases.</div>' : '<div class="vv-prox"><b>Próxima actualización:</b> cuando el maestro capture de nuevo.</div>';
+  if (!chico) h += '<div class="vv-cap">Materias capturadas: ' + nCap + ' de ' + nTot + '</div>';
   h += '<ul class="vv-m">' + r.materias.filter(function(m){ return m.exp > 0; }).map(function(m){
     let li = '<li><div class="r1"><span>' + esc(m.nombre) + '</span><span class="n-' + notaCls(m.c) + '">' + notaTxt(m.c) + '</span></div>' +
-      '<div class="r2">Llevas ' + m.got + ' de ' + m.exp + ' sellos</div><div class="vv-bar"><i style="width:' + Math.min(100, Math.round(m.got / m.exp * 100)) + '%"></i></div>';
+      '<div class="r2">Llevas ' + m.got + ' de ' + m.exp + ' sellos' + (function(){ if (chico) return ""; let p = null; try { p = proxCaptura(gV, [normTxt(m.nombre)]); } catch(e){} return p ? ' · se actualiza ' + (p.hoy ? "hoy" : DIAS_C[p.d.getDay()] + " " + p.d.getDate() + " " + MESES_C[p.d.getMonth()]) : ""; })() + '</div><div class="vv-bar"><i style="width:' + Math.min(100, Math.round(m.got / m.exp * 100)) + '%"></i></div>';
     if (!chico) li += '<details class="vv-det"><summary>Día por día</summary><ul>' + m.dias.map(function(d){
-      const av = d.act ? (d.a == null ? "sin captura de actitud" : d.a >= 2 ? "uniforme completo" : d.a === 1 ? "uniforme incompleto" : "sin uniforme") : "";
+      const av = d.act ? (d.a == null ? "sin captura de actitud y valores" : d.a >= 2 ? "uniforme completo" : d.a === 1 ? "uniforme incompleto" : "sin uniforme") : "";
       return "<li>" + diaCorto(d.f) + ": " + (d.s == null ? 0 : d.s) + " de " + d.meta + " sellos" + (av ? " · " + av : "") + "</li>";
     }).join("") + '</ul></details>';
     return li + "</li>";
@@ -1468,14 +1525,39 @@ function pintarVivo(r, chico){
       return '<li' + (x.yo ? ' class="yo"' : '') + '><span class="p">' + (i+1) + '</span><span class="nm">' + esc(x.n) + (x.yo ? " (tú)" : "") + '</span><span class="nt n-' + notaCls(x.c) + '">' + notaTxt(x.c) + '</span></li>';
     }).join("") + '</ol>' + (!top ? '<p class="vv-s">Tú vas en el lugar ' + r.lugar + ' con ' + notaTxt(r.promedio) + '.</p>' : "") + '</div>';
   }
-  if (r.at){ const d = new Date(r.at); if (!isNaN(d)) h += '<div class="vv-at">Actualizado el ' + d.getDate() + " " + MESES_C[d.getMonth()] + '</div>'; }
+  let fch = "";
+  if (r.at){ const d = new Date(r.at); if (!isNaN(d)) fch = d.getDate() + " " + MESES_C[d.getMonth()]; }
+  if (chico){ if (fch) h += '<div class="vv-at">Actualizado el ' + fch + '</div>'; }
+  else h += '<div class="vv-pie">' + (fch ? '<div class="vv-at">Actualizado el ' + fch + '</div>' : '<span></span>') +
+    '<div class="sello" role="img" aria-label="Sello de revisión del profesor Miguel Ángel Núñez Patiño"><span class="s1">Profesor</span><span class="s2">Miguel Ángel<br>Núñez Patiño</span><span class="s3">SABES La Palma' + (fch ? ' · ' + fch : '') + '</span></div></div>';
   return h + "</section>";
+}
+function sellar(det){
+  const s = det.querySelector(".sello"); if (!s) return;
+  const marca = String((vivoR && vivoR.at) || "-");
+  let visto = ""; try { visto = localStorage.getItem("mi-sabes-sello") || ""; } catch(e){}
+  const caer = function(){
+    s.classList.remove("ya", "cae"); void s.offsetWidth; s.classList.add("cae");
+    setTimeout(function(){ vibrar(28); }, 300);
+  };
+  s.addEventListener("click", caer);
+  if (visto === marca || !("IntersectionObserver" in window)){ s.classList.add("ya"); return; }
+  const io = new IntersectionObserver(function(es){
+    if (!es[0].isIntersecting) return;
+    io.disconnect();
+    try { localStorage.setItem("mi-sabes-sello", marca); } catch(e){}
+    caer();
+  }, {threshold:0.9});
+  io.observe(s);
 }
 function dibujarVivo(){
   const ini = document.getElementById("vivoIni"); if (ini) ini.innerHTML = vivoR ? pintarVivo(vivoR, true) : "";
   const det = document.getElementById("vivoDet");
+  const sep = document.getElementById("vivoSep");
+  if (sep) sep.innerHTML = vivoR ? '<div class="sepa"><h2>Tus calificaciones por semestre</h2><p>Lo que sigue son tus parciales ya calificados, semestre por semestre. El ' + esc(PARCIAL_VIVO.toLowerCase()) + ' en vivo de arriba todavía no se suma aquí.</p></div>' : "";
   if (det){
     det.innerHTML = vivoR ? pintarVivo(vivoR, false) : "";
+    sellar(det);
     if (vivoR && vivoR.lugar != null && vivoR.lugar <= 10){
       let clave = ""; try { clave = (new Date()).toDateString() + "|" + vivoR.lugar; } catch(e){}
       let visto = ""; try { visto = localStorage.getItem("mi-sabes-vivo-fest") || ""; } catch(e){}
