@@ -1517,7 +1517,7 @@ function pintarVivo(r, chico){
   if (r.promedio == null){ return h + '<p class="vv-s">Tu maestro todavía no ha capturado sellos de este parcial. Cuando lo haga, aquí verás tu calificación.</p></section>'; }
   const top = r.lugar != null && r.lugar <= 10;
   h += '<div class="vv-top"><div class="vv-big n-' + notaCls(r.promedio) + '">' + notaTxt(r.promedio) + '</div><div class="vv-tx"><b>' +
-    (top ? "Estás en el top 10: lugar " + r.lugar : "Vas en el lugar " + r.lugar) + '</b><span>de ' + r.de + ' en tu grupo</span></div></div>';
+    (top ? "Estás en el top 10: lugar " + r.lugar : "Así vas en el " + PARCIAL_VIVO.toLowerCase()) + '</b><span>' + (top ? "de " + r.de + " en tu grupo" : "Promedio de las materias capturadas") + '</span></div></div>';
   const nCap = r.materias.filter(function(m){ return m.exp > 0; }).length;
   h += '<p class="vv-s">Esta es tu calificación del <b>' + esc(PARCIAL_VIVO.toLowerCase()) + '</b>, no tu promedio del semestre ni tu calificación final. Sale de tus sellos de actividades y de actitud y valores, y solo cuenta las materias que tu maestro ya capturó. Cambia cada vez que captura.</p>';
   const gV = r.grupo || group;
@@ -1537,7 +1537,7 @@ function pintarVivo(r, chico){
   }).join("") + "</ul>";
   if (chico) h += '<a class="vv-link" href="#mis-datos">Ver el detalle y el top 10</a>';
   else {
-    h += '<div class="vv-top10"><h3>Top 10 de tu grupo</h3><ol>' + filasTop(r) + '</ol>' + (!top ? '<p class="vv-s">Tú vas en el lugar ' + r.lugar + ' con ' + notaTxt(r.promedio) + '.</p>' : "") + '</div>';
+    h += '<div class="vv-top10"><h3>Top 10 de tu grupo</h3><ol>' + filasTop(r) + '</ol></div>';
   }
   let fch = "";
   if (r.at){ const d = new Date(r.at); if (!isNaN(d)) fch = d.getDate() + " " + MESES_C[d.getMonth()]; }
