@@ -293,6 +293,7 @@
   .vv-top10 ol{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px;}
   .vv-top10 li{display:flex;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px;}
   .vv-top10 li.yo{border-color:var(--blue);background:var(--blue-soft);font-weight:700;}
+  .vv-top10 li.mas{justify-content:center;border-style:dashed;color:var(--muted,var(--fg));font-weight:600;}
   .vv-top10 .p{flex:none;width:22px;font-family:var(--font-display);font-weight:800;}
   .vv-top10 .nm{flex:1;min-width:0;} .vv-top10 .nt{font-weight:800;font-variant-numeric:tabular-nums;}
   .vv-link{display:inline-block;margin-top:10px;font-weight:700;font-size:13px;color:var(--blue);}
@@ -1496,6 +1497,21 @@ function diaProx(p){
   if (p.manana) return "mañana, " + DIAS_L[p.d.getDay()] + " " + p.d.getDate() + " de " + MESES_L[p.d.getMonth()];
   return "el " + DIAS_L[p.d.getDay()] + " " + p.d.getDate() + " de " + MESES_L[p.d.getMonth()];
 }
+function filasTop(r){
+  const top = r.top || [], MAX = 12;
+  const lug = top.map(function(x){ return 1 + top.filter(function(y){ return y.c > x.c; }).length; });
+  const fila = function(i){ const x = top[i];
+    return '<li' + (x.yo ? ' class="yo"' : '') + '><span class="p">' + lug[i] + '</span><span class="nm">' + esc(x.n) + (x.yo ? " (tú)" : "") + '</span><span class="nt n-' + notaCls(x.c) + '">' + notaTxt(x.c) + '</span></li>'; };
+  let h = "", oc = [];
+  const yoI = top.findIndex(function(x){ return x.yo; });
+  for (let i = 0; i < top.length; i++){ if (i < MAX) h += fila(i); else if (i !== yoI) oc.push(i); }
+  if (oc.length){
+    const igual = oc.every(function(i){ return top[i].c === top[oc[0]].c; });
+    h += '<li class="mas">y ' + oc.length + ' más' + (igual ? ' con ' + notaTxt(top[oc[0]].c) : ' en el top 10') + '</li>';
+  }
+  if (top.length > MAX && yoI >= MAX) h += fila(yoI);
+  return h;
+}
 function pintarVivo(r, chico){
   let h = '<section class="vivo" aria-live="polite"><div class="vv-k"><span>' + esc(PARCIAL_VIVO) + '</span><span class="vv-pill">En vivo</span></div>';
   if (r.promedio == null){ return h + '<p class="vv-s">Tu maestro todavía no ha capturado sellos de este parcial. Cuando lo haga, aquí verás tu calificación.</p></section>'; }
@@ -1520,9 +1536,7 @@ function pintarVivo(r, chico){
   }).join("") + "</ul>";
   if (chico) h += '<a class="vv-link" href="#mis-datos">Ver el detalle y el top 10</a>';
   else {
-    h += '<div class="vv-top10"><h3>Top 10 de tu grupo</h3><ol>' + r.top.map(function(x, i){
-      return '<li' + (x.yo ? ' class="yo"' : '') + '><span class="p">' + (i+1) + '</span><span class="nm">' + esc(x.n) + (x.yo ? " (tú)" : "") + '</span><span class="nt n-' + notaCls(x.c) + '">' + notaTxt(x.c) + '</span></li>';
-    }).join("") + '</ol>' + (!top ? '<p class="vv-s">Tú vas en el lugar ' + r.lugar + ' con ' + notaTxt(r.promedio) + '.</p>' : "") + '</div>';
+    h += '<div class="vv-top10"><h3>Top 10 de tu grupo</h3><ol>' + filasTop(r) + '</ol>' + (!top ? '<p class="vv-s">Tú vas en el lugar ' + r.lugar + ' con ' + notaTxt(r.promedio) + '.</p>' : "") + '</div>';
   }
   let fch = "";
   if (r.at){ const d = new Date(r.at); if (!isNaN(d)) fch = d.getDate() + " " + MESES_C[d.getMonth()]; }
