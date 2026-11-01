@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+<title>Sellos del parcial</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap">
+<style>
+/* Layout: banda de color por materia con la meta del día; tira de días capturados; lista en dos columnas con sellos de hoy, acumulado y calificación en vivo */
+:root{
+  --bg:#F3F1EC; --surface:#FFFFFF; --ink:#1B1A26; --ink-soft:#5F5D6E; --line:#E0DDD5; --field:#F7F5F0;
+  --c:#6D4AFF;
+  --bad:#E5484D; --bad-soft:#FDE8E8; --mid:#E8A10C; --mid-soft:#FDF2D8; --good:#1E9E5A; --good-soft:#DFF4E8; --top:#5B3FE0; --top-soft:#E9E4FF;
+  --gold:#F4B400;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-num:"DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#12111A; --surface:#1C1B27; --ink:#EEECF5; --ink-soft:#A19FB3; --line:#302E40; --field:#24233A;
+  --bad-soft:#3A1C22; --mid-soft:#3A2D12; --good-soft:#123222; --top-soft:#271F55; --top:#A592FF; --bad:#FF6B6F; --good:#3DCB7E; --mid:#F5B93A;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#12111A; --surface:#1C1B27; --ink:#EEECF5; --ink-soft:#A19FB3; --line:#302E40; --field:#24233A;
+  --bad-soft:#3A1C22; --mid-soft:#3A2D12; --good-soft:#123222; --top-soft:#271F55; --top:#A592FF; --bad:#FF6B6F; --good:#3DCB7E; --mid:#F5B93A;
+  color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.4}
+.wrap{max-width:1220px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+
+.topbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.brand .t{font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:-.01em}
+.sems{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px}
+.sems button{appearance:none;border:0;background:none;font:inherit;font-weight:700;font-size:15px;color:var(--ink-soft);padding:8px 16px;border-radius:10px;cursor:pointer}
+.sems button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+
+.subjects{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.subj{appearance:none;cursor:pointer;font:inherit;font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.subj .dot{width:14px;height:14px;border-radius:5px;background:var(--sc)}
+.subj[aria-pressed="true"]{border-color:var(--sc);background:var(--sc);color:#fff}
+
+.band{position:relative;overflow:hidden;background:var(--c);color:#fff;border-radius:22px;padding:22px 24px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 28px;align-items:center;margin-bottom:14px;transition:background .35s}
+.band canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.2}
+.band > *{position:relative;min-width:0}
+.band .eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.85}
+.band h1{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);line-height:1;margin:6px 0 8px;letter-spacing:-.02em;text-wrap:balance}
+.band .meta{font-size:15px;opacity:.92}
+.daybox{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.field{display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,.18);border-radius:14px;padding:8px 12px}
+.field label{font-size:11.5px;letter-spacing:.08em;font-weight:700;text-transform:uppercase}
+.field input{font-family:var(--f-num);font-size:20px;padding:5px 8px;border-radius:10px;border:0;background:#fff;color:#1B1A26}
+.field input[type=date]{font-size:17px;padding:7px 8px}
+#meta{width:84px;text-align:center;font-size:28px;padding:2px 6px}
+.sesbtn{appearance:none;cursor:pointer;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.04em;line-height:1.2;color:#fff;background:rgba(255,255,255,.12);border:1.5px dashed rgba(255,255,255,.7);border-radius:14px;padding:8px 12px}
+.sesbtn:hover{background:rgba(255,255,255,.24)}
+.field.need{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{background:rgba(255,255,255,.4)}}
+.kpis{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:12px 30px;align-items:flex-end}
+.kpi .n{font-family:var(--f-num);font-size:clamp(24px,3vw,34px);line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;opacity:.85;margin-top:4px;letter-spacing:.06em;text-transform:uppercase}
+.stamps{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-left:auto}
+.stamps svg{width:26px;height:26px}
+
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:8px}
+.day{appearance:none;cursor:pointer;font:inherit;flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:62px;padding:7px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.day .dw{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.day .dn{font-family:var(--f-display);font-weight:800;font-size:20px;line-height:1.05}
+.day .dm{font-family:var(--f-num);font-size:11.5px;color:var(--ink-soft)}
+.day[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb, var(--c) 12%, var(--surface))}
+.day.empty{opacity:.55}
+.days .none{font-size:14px;color:var(--ink-soft);padding:8px 2px}
+
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.tool{appearance:none;cursor:pointer;font:inherit;font-weight:600;font-size:14px;padding:8px 13px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.tool:hover{border-color:var(--c)}
+.tool[aria-pressed="false"]{color:var(--ink-soft);text-decoration:line-through}
+.search{flex:1 1 200px;min-width:0}
+.search input{width:100%;font:inherit;font-size:15px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.status{font-size:13px;color:var(--ink-soft);margin-left:auto}
+.status.err{color:var(--bad);font-weight:600}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;background:var(--bad-soft);border-radius:10px;padding:6px 10px;margin-bottom:12px}
+
+.heads{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.colhead{display:grid;grid-template-columns:30px minmax(0,1fr) 62px 50px 62px 54px;gap:8px;padding:0 8px 4px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.colhead span:nth-child(n+3){text-align:center}
+.list{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;list-style:none;margin:0;padding:0}
+@media (max-width:860px){.list,.heads{grid-template-columns:1fr}.heads .colhead:nth-child(2){display:none}.band{grid-template-columns:1fr}.stamps{margin-left:0}}
+.row{display:grid;grid-template-columns:30px minmax(0,1fr) 62px 50px 62px 54px;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:7px 8px 7px 10px;transition:background .25s,border-color .25s,transform .15s}
+.row .no{font-family:var(--f-num);font-size:13px;color:var(--ink-soft);text-align:right}
+.row .nm{min-width:0;font:inherit;font-weight:600;font-size:16px;line-height:1.2;text-align:left;background:none;border:0;padding:0;color:inherit;cursor:pointer}
+.row .nm:hover{text-decoration:underline;text-decoration-color:var(--c);text-underline-offset:3px}
+.row input.act{font-size:20px;padding:6px 0}
+.row input.act.full{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.row input.act.half{background:var(--mid-soft);border-color:var(--mid);color:var(--mid)}
+.row input.act.none{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.colhead .ayv{font-size:10px;letter-spacing:.04em;line-height:1.1}
+.row input{width:100%;font-family:var(--f-num);font-size:24px;text-align:center;padding:5px 2px;border-radius:10px;border:1.5px solid var(--line);background:var(--field);color:var(--ink)}
+.row input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent)}
+.row input:disabled{opacity:.45}
+.row.focus{border-color:var(--c);transform:scale(1.01)}
+.row .acc{font-family:var(--f-num);font-size:14px;text-align:center;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.row .cal{font-family:var(--f-num);font-size:24px;text-align:center;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.row.done input.sel{border-color:var(--gold);background:color-mix(in srgb, var(--gold) 16%, var(--field))}
+.row.b-bad .cal{color:var(--bad)} .row.b-mid .cal{color:var(--mid)} .row.b-good .cal{color:var(--good)} .row.b-top .cal{color:var(--top)}
+.row.b-top{background:var(--top-soft);border-color:color-mix(in srgb, var(--top) 45%, transparent)}
+.row.hidden{display:none}
+.row input.invalid{border-color:var(--bad)!important;animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.row.glow-done{animation:glowDone 1.4s ease-out}
+.row.glow-part{animation:glowPart .9s ease-out}
+@keyframes glowDone{0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--gold) 75%, transparent);transform:scale(1)}22%{transform:scale(1.05)}45%{transform:scale(.99)}100%{box-shadow:0 0 0 24px transparent;transform:scale(1)}}
+@keyframes glowPart{0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--c) 50%, transparent)}100%{box-shadow:0 0 0 12px transparent}}
+.cal.tick{animation:tick .5s ease}
+@keyframes tick{40%{transform:scale(1.35)}}
+.hint{margin-top:18px;font-size:13.5px;color:var(--ink-soft);max-width:80ch}
+.hint kbd{font-family:var(--f-num);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;background:var(--surface)}
+
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.cheer{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:51;pointer-events:none;text-align:center}
+.cheer .big{font-family:var(--f-display);font-weight:800;font-size:clamp(70px,11vw,150px);line-height:.95;color:var(--gold);text-shadow:0 5px 0 rgba(120,80,0,.25);letter-spacing:-.03em}
+.cheer.ten .big{color:var(--top);font-size:clamp(110px,18vw,220px)}
+.cheer .who{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.2vw,38px);margin-top:6px;background:var(--surface);color:var(--ink);padding:6px 20px;border-radius:99px;display:inline-block;box-shadow:0 10px 30px rgba(20,20,60,.18)}
+.cheer.show{animation:cheerIn var(--dur,1.6s) cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes cheerIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg)}16%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(2deg)}24%{transform:translate(-50%,-50%) scale(1) rotate(0)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(.96)}}
+.uni{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:52;pointer-events:none;text-align:center;--shirt:#6D4AFF}
+.uniart{position:relative;display:inline-block}
+.shirt{width:clamp(150px,20vw,230px);height:auto;filter:drop-shadow(0 12px 18px rgba(20,20,60,.25))}
+.thumb{position:absolute;right:-26%;top:28%;font-size:clamp(64px,8vw,104px);line-height:1}
+.unitxt{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,5vw,60px);color:var(--good);letter-spacing:-.02em;text-shadow:0 4px 0 color-mix(in srgb, var(--good) 22%, transparent);margin-top:4px}
+.uni .who{font-family:var(--f-display);font-weight:700;font-size:clamp(20px,2.8vw,32px);margin-top:6px;background:var(--surface);color:var(--ink);padding:5px 18px;border-radius:99px;display:inline-block;box-shadow:0 10px 30px rgba(20,20,60,.18)}
+.uni.show{animation:uniIn 2.1s ease forwards}
+.uni.show .shirt{animation:shirtJump 1s cubic-bezier(.3,1.6,.5,1) 2}
+.uni.show .thumb{animation:thumbPop 1.2s cubic-bezier(.2,1.8,.4,1) .15s both}
+@keyframes uniIn{0%{opacity:0;transform:translate(-50%,-40%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}82%{opacity:1}100%{opacity:0;transform:translate(-50%,-56%)}}
+@keyframes shirtJump{0%{transform:translateY(0) rotate(0)}25%{transform:translateY(-22px) rotate(-6deg)}50%{transform:translateY(0) rotate(5deg)}70%{transform:translateY(-8px) rotate(-2deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes thumbPop{0%{transform:scale(0) rotate(-40deg)}55%{transform:scale(1.25) rotate(12deg)}75%{transform:scale(.95) rotate(-6deg)}100%{transform:scale(1) rotate(0)}}
+.hist{position:fixed;inset:0;z-index:60;background:rgba(15,14,25,.45);display:flex;align-items:center;justify-content:center;padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.hcard{background:var(--surface);color:var(--ink);border-radius:20px;width:min(640px,100%);max-height:100%;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.3);border-top:8px solid var(--c)}
+.hhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px 8px}
+.hname{font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.1;text-wrap:balance}
+.hsub{color:var(--ink-soft);font-size:14px;margin-top:4px}
+.huni{padding:0 20px 10px;font-weight:700;color:var(--ink)}
+.htable{overflow:auto;padding:0 20px 20px}
+.htable table{width:100%;border-collapse:collapse;font-size:15px}
+.htable th{text-align:left;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);padding:6px 8px;border-bottom:1.5px solid var(--line)}
+.htable td{padding:8px;border-bottom:1px solid var(--line)}
+.htable td.n{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.htable td.short{color:var(--bad)}
+.htable .emptyh{color:var(--ink-soft);font-style:italic}
+.pill{display:inline-block;font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px}
+.u-ok{background:var(--good-soft);color:var(--good)} .u-half{background:var(--mid-soft);color:var(--mid)} .u-no{background:var(--bad-soft);color:var(--bad)} .u-na{background:var(--field);color:var(--ink-soft)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.row .nm{overflow-wrap:anywhere}
+@media (max-width:560px){
+  .colhead,.row{grid-template-columns:22px minmax(0,1fr) 54px 44px 46px;gap:6px}
+  .colhead span:nth-child(5),.row .acc{display:none}
+  .row .nm{font-size:14px}
+  .row input{font-size:20px}
+}
+.llave{position:fixed;inset:0;z-index:80;background:rgba(15,14,25,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.lcard{background:var(--surface);color:var(--ink);border-radius:18px;padding:22px;width:min(380px,100%);display:flex;flex-direction:column;gap:12px;border-top:8px solid var(--c)}
+.lcard .lt{font-family:var(--f-display);font-weight:800;font-size:24px}
+.lcard p{margin:0;color:var(--ink-soft);font-size:15px}
+.lcard input{font:inherit;font-size:20px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--field);color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><span class="k">SABES La Palma · Ago–Dic 2026</span><span class="t">Tercer parcial · sellos diarios</span></div>
+    <div class="sems" id="sems" role="group" aria-label="Semestre"></div>
+  </div>
+  <div class="subjects" id="subjects" role="group" aria-label="Materia"></div>
+
+  <section class="band" id="band">
+    <canvas id="tex" aria-hidden="true"></canvas>
+    <div>
+      <div class="eyebrow" id="bEyebrow"></div>
+      <h1 id="bTitle"></h1>
+      <div class="meta" id="bMeta"></div>
+    </div>
+    <div class="daybox">
+      <div class="field"><label for="fecha">Fecha</label><input id="fecha" type="date"></div>
+      <button class="sesbtn" id="otraSes" type="button">+ Otra sesión<br>este día</button>
+      <div class="field" id="metaBox"><label for="meta">Sellos de hoy</label><input id="meta" inputmode="numeric" autocomplete="off" maxlength="2" placeholder="?"></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kAcum">0</div><div class="l">Sellos esperados</div></div>
+      <div class="kpi"><div class="n" id="kDias">0</div><div class="l">Días con sellos</div></div>
+      <div class="kpi"><div class="n" id="kHoy">0/0</div><div class="l">Completaron hoy</div></div>
+      <div class="kpi"><div class="n" id="kUni">0/0</div><div class="l">Uniforme completo</div></div>
+      <div class="kpi"><div class="n" id="kAvg">–</div><div class="l">Promedio en vivo</div></div>
+      <div class="stamps" id="stamps" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <div class="days" id="days" aria-label="Días capturados"></div>
+
+  <div class="tools">
+    <div class="search"><input id="q" type="search" placeholder="Buscar alumno…" autocomplete="off"></div>
+    <button class="tool" id="fillMeta" type="button">Todos completos</button>
+    <button class="tool" id="fillUni" type="button">Todos con uniforme</button>
+    <button class="tool" id="xls" type="button" hidden>Descargar Excel</button>
+    <button class="tool" id="full" type="button">Pantalla completa</button>
+    <button class="tool" id="anim" type="button" aria-pressed="true">Animaciones</button>
+    <button class="tool" id="delDay" type="button">Borrar este día</button>
+    <span class="status" id="status">Cargando…</span>
+  </div>
+  <div id="confirmBox" hidden></div>
+
+  <div class="heads">
+    <div class="colhead"><span></span><span>Alumno</span><span>Hoy</span><span class="ayv">Actitud<br>y valores</span><span>Lleva</span><span>Calif.</span></div>
+    <div class="colhead"><span></span><span>Alumno</span><span>Hoy</span><span class="ayv">Actitud<br>y valores</span><span>Lleva</span><span>Calif.</span></div>
+  </div>
+  <ol class="list" id="list"></ol>
+  <p class="hint">Elige la fecha y escribe cuántos sellos tocaban ese día. Luego captura los sellos de cada alumno y pulsa <kbd>Enter</kbd> para pasar a Actitud y valores; ahí basta con teclear <kbd>2</kbd> (uniforme completo), <kbd>1</kbd> (incompleto) o <kbd>0</kbd> y salta solo al siguiente alumno. Con <kbd>↓</kbd> pasas directo al siguiente sin tocar actitud. Cada día suma 2 sellos de actitud y valores a los esperados. Toca el nombre de un alumno para ver su historial por fecha. "Lleva" es la suma de todos sus sellos contra los esperados de todos los días, y la calificación es esa proporción sobre 10, con tope de 10. Si un alumno no tiene captura en un día con sellos, ese día cuenta como cero. Para corregir un día anterior, tócalo en la tira de fechas. Si das la misma materia dos veces el mismo día (antes y después del receso), usa "+ Otra sesión este día": cada sesión lleva su propia meta y se suma; actitud y valores se captura una sola vez, en la 1ª sesión. Se guarda solo.</p>
+</div>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="uni" id="uni" hidden>
+  <div class="uniart">
+    <svg id="uniShirt" class="shirt" viewBox="0 0 120 112" aria-hidden="true">
+      <path d="M38 8 L18 15 L2 36 L17 51 L28 43 L28 106 L92 106 L92 43 L103 51 L118 36 L102 15 L82 8 Q60 28 38 8 Z" fill="var(--shirt)" stroke="rgba(0,0,0,.18)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M38 8 Q60 28 82 8 L76 5 Q60 20 44 5 Z" fill="#fff"/>
+      <path d="M52 20 L60 36 L68 20" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="60" cy="48" r="2.6" fill="#fff"/><circle cx="60" cy="60" r="2.6" fill="#fff"/>
+      <rect x="70" y="40" width="13" height="10" rx="2" fill="none" stroke="#fff" stroke-width="2"/>
+    </svg>
+    <span class="thumb" aria-hidden="true">👍</span>
+  </div>
+  <div class="unitxt">¡Uniforme completo!</div>
+  <div class="who" id="uniWho"></div>
+</div>
+<div class="hist" id="hist" hidden>
+  <div class="hcard" role="dialog" aria-modal="true" aria-labelledby="hName">
+    <div class="hhead"><div><div class="hname" id="hName"></div><div class="hsub" id="hSub"></div></div><button class="tool" id="hClose" type="button">Cerrar</button></div>
+    <div class="huni" id="hUni"></div>
+    <div class="htable"><table><thead><tr><th>Fecha</th><th>Sellos</th><th>Actitud y valores</th></tr></thead><tbody id="hBody"></tbody></table></div>
+  </div>
+</div>
+<div class="llave" id="llave" hidden><div class="lcard"><div class="lt">Sellos del parcial</div><p id="llaveMsg"></p><input id="llaveIn" type="password" autocomplete="off" aria-label="Clave de maestro"><button class="tool" id="llaveBtn" type="button">Entrar</button></div></div>
+<div class="cheer" id="cheer" hidden><div class="big" id="cheerBig"></div><div class="who" id="cheerWho"></div></div>
+
+<script>
+const ROSTER = [{"key":"1","label":"1er semestre","grupo":"U","alumnos":[{"m":"V26152M0013","n":"Alexandra Lara Rodriguez"},{"m":"V26152M0012","n":"Alexis Fernando Mendoza Mandujano"},{"m":"V26152M0032","n":"Ana Isabel Becerra Sanchez"},{"m":"V26152M0036","n":"Ana Valeria Gomez Cruz"},{"m":"V26152M0009","n":"Andrea Mendoza Sanchez"},{"m":"V26152M0011","n":"Andres Manuel Moreno Mendoza"},{"m":"V26152M0028","n":"Cristian Bravo Camacho"},{"m":"V26152M0005","n":"Daniela Patiño Ramirez"},{"m":"V26152M0027","n":"Diego Antonio Escobedo Nuñez"},{"m":"V26152M0008","n":"Evelin Judit Hurtado Carpio"},{"m":"V26152M0020","n":"Evelyn Guadalupe Mendoza Hernandez"},{"m":"V26152M0040","n":"Fernando Mora Cervantes"},{"m":"V26152M0037","n":"Gerardo de Jesus Hernandez Muñoz"},{"m":"V26152M0029","n":"Guadalupe Maldonado Malagon"},{"m":"V26152M0004","n":"Guadalupe Yasmin Cervantes Mendoza"},{"m":"V26152M0019","n":"Itzel Mendoza Mendoza"},{"m":"V26152M0021","n":"Jade Michelle Molina Moreno"},{"m":"V26152M0022","n":"Jazmin Guadalupe Hernandez Morales"},{"m":"V26152M0016","n":"Jimena Malagon Cabrera"},{"m":"V26152M0034","n":"Jose Raul Gonzalez Muñoz"},{"m":"V26152M0001","n":"Jose de Jesus Hernandez Hernandez"},{"m":"V26152M0026","n":"Julieta Marlen Vazquez Lara"},{"m":"V26152M0018","n":"Keili Joselin Hernandez Molina"},{"m":"V26152M0025","n":"Keiry Vanesa Sanchez Guerra"},{"m":"V26152M0006","n":"Liliana Guadalupe Mandujano Sanchez"},{"m":"V26152M0014","n":"Lizbeth Muñoz Hurtado"},{"m":"V26152M0010","n":"Melany de los Angeles Cardoso Galvan"},{"m":"V26152M0030","n":"Mindy Daniela Peña Patiño"},{"m":"V26152M0035","n":"Nathali Yaxeni Cruz Patiño"},{"m":"V26152M0002","n":"Nicole Rangel Pichardo"},{"m":"V26152M0007","n":"Olimpia Paola Peña Maldonado"},{"m":"V26152M0031","n":"Sarai Sanchez Salinas"},{"m":"V26152M0033","n":"Simona Guadalupe Morales Mandujano"},{"m":"V26152M0003","n":"Sonia Daniela Malagon Castillo"},{"m":"V26152M0024","n":"Tania Sarahi Arvizo Patiño"},{"m":"V26152M0023","n":"Valeria Montserrat Hernandez Nuñez"},{"m":"V26152M0015","n":"Ximena Mendoza Hernandez"},{"m":"V26152M0017","n":"Yoselin Guadalupe Malagon Trejo"}]},{"key":"3","label":"3er semestre","grupo":"U","alumnos":[{"m":"V25152M0037","n":"Alan Rafael Sanchez Mendoza"},{"m":"V25152M0002","n":"Alejandra Lizeth Bautista Ortiz"},{"m":"V25152M0048","n":"Alejandro Isai Hernandez Patiño"},{"m":"V25152M0003","n":"Alexander Julian Ayala Peña"},{"m":"V25152M0019","n":"Ana Victoria Vazquez Mendoza"},{"m":"V25152M0041","n":"Arlet Valeria De Jesus Eduardo"},{"m":"V25152M0036","n":"Brissa Sanchez Cervantes"},{"m":"V25152M0020","n":"Camila Guadalupe Mandujano Jimenez"},{"m":"V25152M0011","n":"Camila Rodriguez Mondragon"},{"m":"V25152M0027","n":"Carla Jocelyn Lara Salinas"},{"m":"V25152M0006","n":"Carol Milagros Cervantes Hernandez"},{"m":"V25152M0035","n":"Citlali Berenice Sanchez Hernandez"},{"m":"V25152M0029","n":"Cristian Dominguez Hernandez"},{"m":"V25152M0030","n":"Emma Guadalupe Torres Araiza"},{"m":"V25152M0018","n":"Erik Aureliano Martinez Rodriguez"},{"m":"V25152M0007","n":"Estefani Vanessa Guerra Camacho"},{"m":"V25152M0014","n":"Fernando Saul Hurtado Hurtado"},{"m":"V25152M0013","n":"Isamar Maldonado Hurtado"},{"m":"V25152M0015","n":"Jenifer Villalobos Moreno"},{"m":"V25152M0017","n":"Jeremi Ezequiel Hurtado Carpio"},{"m":"V25152M0005","n":"Jose Manuel Rodriguez Moreno"},{"m":"V25152M0022","n":"Juan Pedro Carranco Cruz"},{"m":"V25152M0039","n":"Karla Ximena Vargas Rodriguez"},{"m":"V25152M0032","n":"Luis Angel Maldonado Padilla"},{"m":"V25152M0010","n":"Luis Damian Moreno Mendoza"},{"m":"V25152M0023","n":"Luz Nefertari Hurtado Molina"},{"m":"V25152M0031","n":"Mareli Cristal Tovar Hurtado"},{"m":"V25152M0025","n":"Maria de los Angeles Salinas Cruz"},{"m":"V25152M0021","n":"Maritza De la Cruz Ortiz"},{"m":"V25152M0009","n":"Princesa Michell Hernandez Torres"},{"m":"V25152M0012","n":"Valeria Estrada Ontiveros"},{"m":"V25152M0016","n":"Valeria Malagon Carpio"},{"m":"V25152M0026","n":"Vanesa Edith Salinas Morales"},{"m":"V25152M0043","n":"Ximena Trejo Lopez"},{"m":"V25152M0034","n":"Yatziri Guadalupe Lara Rodriguez"},{"m":"V25152M0001","n":"Yeimy Esteisy Cabrera Rodriguez"},{"m":"V25152M0028","n":"Yostin Martin Perez Gonzalez"}]},{"key":"5","label":"5to semestre","grupo":"B","alumnos":[{"m":"V24152M0029","n":"Abram Sanchez Rangel"},{"m":"V24152M0026","n":"Alejandro Patiño Salinas"},{"m":"V24152M0024","n":"Alexa Noelia Hernandez Estrada"},{"m":"V24152M0003","n":"Alexandra Gonzalez Morales"},{"m":"V24152M0047","n":"Alexis Torres Guerra"},{"m":"V24152M0035","n":"America Jande Perez Mandujano"},{"m":"V24152M0005","n":"Angel Israel Guerrero Cabrera"},{"m":"V24152M0031","n":"Ariana Yisel Noriega Hurtado"},{"m":"V24152M0010","n":"Arturo Lizardi Peña"},{"m":"V24152M0039","n":"Axel Andre Guerrero Ayala"},{"m":"V24152M0002","n":"Daniela Guadalupe Hernandez Cruz"},{"m":"V24152M0015","n":"Danna Nuñez Salinas"},{"m":"V24152M0042","n":"Emiliano Escobedo Nuñez"},{"m":"V24152M0045","n":"Emiliano Salinas Arellano"},{"m":"V24152M0027","n":"Estefania Yrais Yepez Patiño"},{"m":"V24152M0012","n":"Estrella Muñoz Hurtado"},{"m":"V24152M0028","n":"Fatima Moreno Salinas"},{"m":"V24152M0020","n":"Francisco Hurtado Peña"},{"m":"V24152M0041","n":"Giovanni Sebastian Bravo Hernandez"},{"m":"V24152M0030","n":"Jacqueline Malagon Cabrera"},{"m":"V24152M0023","n":"Jesus Alejandro Mandujano Sanchez"},{"m":"V24152M0036","n":"Jonathan Jafet Juarez Molina"},{"m":"V24152M0025","n":"Jose Ramon Guerrero Rangel"},{"m":"V24152M0043","n":"Juan Angel Mendoza Sanchez"},{"m":"V24152M0048","n":"Kevin Armando Hernandez Retana"},{"m":"V24152M0001","n":"Luz Adriana Cruz Hernandez"},{"m":"V24152M0037","n":"Melani Mendoza Jimenez"},{"m":"V24152M0034","n":"Melany Peña Patiño"},{"m":"V24152M0008","n":"Nayely Nathaly Tovar Hernandez"},{"m":"V24152M0014","n":"Paola Edith Hernandez Valadez"},{"m":"V24152M0007","n":"Raul Patiño Peña"},{"m":"V24152M0019","n":"Regina Aboytes Peña"},{"m":"V24152M0006","n":"Ruth Sanchez Cruz"},{"m":"V24152M0033","n":"Sarahi Valadez Sanchez"},{"m":"V24152M0009","n":"Veronica Moreno Molina"},{"m":"V24152M0013","n":"Ximena Ayala Guerra"},{"m":"V24152M0016","n":"Ximena Moreno Salinas"},{"m":"V24152M0021","n":"Yan Carlo Morales Patiño"}]}];
+const PLAN = {
+  "1":[{id:"hum1",name:"Humanidades I",color:"#6D4AFF"},{id:"lyc1",name:"Lengua y Comunicación I",color:"#F0533F"},{id:"cs1",name:"Ciencias Sociales I",color:"#0B9C9C"}],
+  "3":[{id:"hum3",name:"Humanidades III",color:"#6D4AFF"},{id:"lyc3",name:"Lengua y Comunicación III",color:"#F0533F"}],
+  "5":[{id:"adm",name:"Administración",color:"#D98300"},{id:"ch2",name:"Conciencia Histórica II",color:"#C2185B"},{id:"pcc",name:"Práctica y Colaboración Ciudadana",color:"#2A8F4E"}]
+};
+const SEMNAME = {"1":"1er semestre","3":"3er semestre","5":"5to semestre"};
+const ACT = 2;  // sellos de Actitud y valores por día
+const has = d => !!d && d.meta!=null;
+const DOW = ["dom","lun","mar","mié","jue","vie","sáb"];
+const MON = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+
+const store = {};   // docId -> {days:{"YYYY-MM-DD":{meta:n|null, s:{matricula:"3"}}}, at}
+let sem = "1", subj = "hum1", fecha = todayStr();
+let coll = null, local = true;
+const pending = {}, writing = {}, timers = {};
+const $ = id => document.getElementById(id);
+
+function todayStr(){ const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parseD(s){ const [y,m,d] = s.slice(0,10).split("-").map(Number); return new Date(y, m-1, d); }
+const sesN = k => k.includes("~") ? Number(k.split("~")[1]) : 1;
+const actOf = k => sesN(k) > 1 ? 0 : ACT;
+function longDate(s){ const d = parseD(s); return ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"][d.getDay()]+" "+d.getDate()+" de "+["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"][d.getMonth()] + (sesN(s)>1 ? " · "+sesN(s)+"ª sesión" : ""); }
+
+try{ const s = JSON.parse(localStorage.getItem("p3-view")||"null"); if(s && PLAN[s.sem]){ sem=s.sem; subj = PLAN[sem].some(x=>x.id===s.subj)? s.subj : PLAN[sem][0].id; } }catch(e){}
+try{ Object.assign(store, JSON.parse(localStorage.getItem("p3-data")||"{}")); }catch(e){}
+
+const docId = () => "s"+sem+"-"+subj;
+const cur = () => PLAN[sem].find(x=>x.id===subj);
+const roster = () => ROSTER.find(g=>g.key===sem);
+const entry = id => (store[id] = store[id] || {days:{}, at:null});
+const day = (id, f) => { const e = entry(id); const d = e.days[f] = e.days[f] || {meta:null, s:{}, a:{}}; if(!d.a) d.a = {}; return d; };
+const peekDay = (id, f) => { const d = ((store[id]||{days:{}}).days[f]) || {meta:null, s:{}, a:{}}; return d.a ? d : Object.assign({}, d, {a:{}}); };
+
+function totals(id, m){
+  const e = store[id]; let exp = 0, got = 0;
+  if(e) for(const [k,d] of Object.entries(e.days)){ if(has(d)){ exp += d.meta + actOf(k); got += Number(d.s[m]||0) + Number((d.a||{})[m]||0); } }
+  const c = exp ? Math.round(Math.min(10, got/exp*10)*10)/10 : null;
+  return {exp, got, c};
+}
+function fmt(c){ return c==null? "–" : (Number.isInteger(c)? String(c) : c.toFixed(1)); }
+function band(c){ if(c==null) return null; if(c<6) return "bad"; if(c<8) return "mid"; if(c<10) return "good"; return "top"; }
+function norm(raw){
+  const s = String(raw).trim().replace(",",".");
+  if(s==="") return "";
+  if(!/^\d{1,2}(\.5)?$/.test(s)) return null;
+  return String(Number(s));
+}
+
+/* ---------- Render ---------- */
+function renderSems(){
+  $("sems").innerHTML = "";
+  for(const k of ["1","3","5"]){
+    const b = document.createElement("button"); b.type="button"; b.id="sem-"+k;
+    b.textContent = k+"°"; b.title = SEMNAME[k]; b.setAttribute("aria-pressed", k===sem);
+    b.onclick = ()=>{ sem=k; subj=PLAN[k][0].id; saveView(); renderAll(); };
+    $("sems").appendChild(b);
+  }
+}
+function renderSubjects(){
+  $("subjects").innerHTML = "";
+  for(const s of PLAN[sem]){
+    const b = document.createElement("button"); b.type="button"; b.className="subj"; b.id="subj-"+s.id;
+    b.style.setProperty("--sc", s.color); b.setAttribute("aria-pressed", s.id===subj);
+    b.innerHTML = '<span class="dot"></span><span></span>'; b.children[1].textContent = s.name;
+    b.onclick = ()=>{ subj=s.id; saveView(); renderAll(); };
+    $("subjects").appendChild(b);
+  }
+}
+function renderDays(){
+  const box = $("days"); box.innerHTML = "";
+  const e = store[docId()] || {days:{}};
+  const keys = Object.keys(e.days).filter(k=>has(e.days[k]) || Object.keys(e.days[k].s).length);
+  if(!keys.includes(fecha)) keys.push(fecha);
+  keys.sort();
+  for(const k of keys){
+    const d = parseD(k), de = e.days[k];
+    const b = document.createElement("button"); b.type="button"; b.className="day"; b.id="day-"+k;
+    if(!has(de)) b.classList.add("empty");
+    b.setAttribute("aria-pressed", k===fecha);
+    b.innerHTML = '<span class="dw"></span><span class="dn"></span><span class="dm"></span>';
+    b.children[0].textContent = sesN(k)>1 ? sesN(k)+"ª sesión" : DOW[d.getDay()]+" "+MON[d.getMonth()];
+    b.children[1].textContent = d.getDate();
+    b.children[2].textContent = has(de) ? (actOf(k) ? de.meta+" + "+ACT+" AyV" : de.meta+(de.meta===1?" sello":" sellos")) : "sin meta";
+    b.onclick = ()=>{ fecha = k; $("fecha").value = k.slice(0,10); renderAll(); };
+    box.appendChild(b);
+  }
+  const sel = $("day-"+fecha); if(sel) sel.scrollIntoView({block:"nearest", inline:"nearest"});
+}
+function renderList(){
+  const id = docId(), d = peekDay(id, fecha);
+  const ol = $("list"); ol.innerHTML = "";
+  roster().alumnos.forEach((a,i)=>{
+    const li = document.createElement("li"); li.className="row"; li.dataset.m=a.m;
+    li.innerHTML = '<span class="no"></span><button type="button" class="nm"></button><input class="sel" inputmode="decimal" autocomplete="off" maxlength="4"><input class="act" inputmode="numeric" autocomplete="off" maxlength="1"><span class="acc"></span><span class="cal"></span>';
+    li.querySelector(".no").textContent = i+1;
+    li.querySelector(".nm").textContent = a.n;
+    li.querySelector(".nm").title = "Ver historial"; li.querySelector(".nm").onclick = ()=>openHist(a);
+    const inp = li.querySelector("input.sel"), act = li.querySelector("input.act");
+    inp.id = "g-"+a.m; inp.value = d.s[a.m]||""; inp.disabled = !has(d);
+    act.id = "a-"+a.m; act.value = d.a[a.m]==null ? "" : d.a[a.m]; act.disabled = !has(d) || !actOf(fecha); if(!actOf(fecha)){ act.placeholder = "–"; act.title = "Actitud y valores se captura en la 1ª sesión del día"; }
+    act.setAttribute("aria-label","Actitud y valores de "+a.n);
+    act.addEventListener("focus",()=>{li.classList.add("focus"); act.select();});
+    act.addEventListener("blur",()=>{li.classList.remove("focus"); commitAct(li,act);});
+    act.addEventListener("input",()=>{ if(/^[0-2]$/.test(act.value.trim()) && commitAct(li,act)!==false) move(li,1); });
+    act.addEventListener("keydown",ev=>{
+      if(ev.key==="Enter"||ev.key==="ArrowDown"){ ev.preventDefault(); if(commitAct(li,act)!==false) move(li,1); }
+      else if(ev.key==="ArrowUp"){ ev.preventDefault(); commitAct(li,act); move(li,-1,"act"); }
+      else if(ev.key==="ArrowLeft"){ ev.preventDefault(); inp.focus(); }
+      else if(ev.key==="Escape"){ const v = peekDay(docId(),fecha).a[a.m]; act.value = v==null?"":v; act.blur(); }
+    });
+    inp.setAttribute("aria-label","Sellos de hoy de "+a.n);
+    paintRow(li);
+    inp.addEventListener("focus",()=>{li.classList.add("focus"); inp.select();});
+    inp.addEventListener("blur",()=>{li.classList.remove("focus"); commit(li,inp);});
+    inp.addEventListener("keydown",ev=>{
+      if(ev.key==="Enter"||ev.key==="ArrowRight"){ ev.preventDefault(); if(commit(li,inp)!==false){ if(act.disabled) move(li,1); else act.focus(); } }
+      else if(ev.key==="ArrowDown"){ ev.preventDefault(); if(commit(li,inp)!==false) move(li,1); }
+      else if(ev.key==="ArrowUp"){ ev.preventDefault(); commit(li,inp); move(li,-1); }
+      else if(ev.key==="Escape"){ inp.value = peekDay(docId(),fecha).s[a.m]||""; inp.blur(); }
+    });
+    ol.appendChild(li);
+  });
+  filter();
+}
+function paintRow(li){
+  const id = docId(), m = li.dataset.m, t = totals(id, m), d = peekDay(id, fecha);
+  li.classList.remove("b-bad","b-mid","b-good","b-top","done");
+  const b = band(t.c); if(b) li.classList.add("b-"+b);
+  if(has(d) && d.s[m]!=null && Number(d.s[m]) >= d.meta) li.classList.add("done");
+  const act = li.querySelector("input.act"), av = d.a[m];
+  act.classList.remove("full","half","none");
+  if(av!=null) act.classList.add(Number(av)>=ACT ? "full" : Number(av)>0 ? "half" : "none");
+  li.querySelector(".acc").textContent = t.exp ? t.got+"/"+t.exp : "–";
+  li.querySelector(".cal").textContent = fmt(t.c);
+}
+function repaintRows(){ for(const li of $("list").children) paintRow(li); }
+function move(li,dir,which){
+  let n = dir>0? li.nextElementSibling : li.previousElementSibling;
+  while(n && n.classList.contains("hidden")) n = dir>0? n.nextElementSibling : n.previousElementSibling;
+  const sel = which==="act" ? "input.act" : "input.sel";
+  if(n) n.querySelector(sel).focus(); else if(document.activeElement) document.activeElement.blur();
+}
+function filter(){
+  const fold = t => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const q = fold($("q").value.trim());
+  for(const li of $("list").children) li.classList.toggle("hidden", !!q && !fold(li.querySelector(".nm").textContent).includes(q));
+}
+const STAMP = '<svg viewBox="0 0 26 26"><circle cx="13" cy="13" r="11.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="2.2 1.6"/><path d="M13 6.2l1.9 4.2 4.5.4-3.4 3 1 4.5-4-2.4-4 2.4 1-4.5-3.4-3 4.5-.4z" fill="#fff"/></svg>';
+function renderStats(){
+  const s = cur(), r = roster(), id = docId(), d = peekDay(id, fecha), e = store[id] || {days:{}};
+  document.documentElement.style.setProperty("--c", s.color);
+  $("bEyebrow").textContent = SEMNAME[sem]+" · Grupo "+r.grupo;
+  $("bTitle").textContent = s.name;
+  $("bMeta").textContent = longDate(fecha) + (fecha===todayStr() ? " · hoy" : "") + (has(d) ? " · tocaban "+d.meta+(d.meta===1?" sello":" sellos")+(actOf(fecha) ? " + "+ACT+" de actitud y valores" : "") : " · escribe cuántos sellos tocaban");
+  const metaInp = $("meta");
+  if(document.activeElement!==metaInp) metaInp.value = has(d) ? d.meta : "";
+  $("metaBox").classList.toggle("need", !has(d));
+  const ents = Object.entries(e.days).filter(([k,x])=>has(x));
+  const days = ents.map(([k,x])=>x);
+  const exp = ents.reduce((a,[k,x])=>a+x.meta+actOf(k),0);
+  $("kAcum").textContent = exp;
+  $("kDias").textContent = new Set(ents.map(([k])=>k.slice(0,10))).size;
+  const done = has(d) ? r.alumnos.filter(a=>d.s[a.m]!=null && Number(d.s[a.m])>=d.meta).length : 0;
+  $("kHoy").textContent = done+"/"+r.alumnos.length;
+  { const d1 = peekDay(id, fecha.slice(0,10)); $("kUni").textContent = r.alumnos.filter(a=>Number(d1.a[a.m]||0)>=ACT).length+"/"+r.alumnos.length; }
+  const cs = r.alumnos.map(a=>totals(id,a.m).c).filter(c=>c!=null);
+  $("kAvg").textContent = cs.length ? (cs.reduce((x,y)=>x+y,0)/cs.length).toFixed(1) : "–";
+  $("stamps").innerHTML = has(d) && d.meta ? STAMP.repeat(Math.min(d.meta, 12)) + (d.meta>12 ? '<span style="font-family:var(--f-num);font-size:15px">+'+(d.meta-12)+'</span>' : "") : "";
+  drawTex();
+}
+function drawTex(){
+  const c = $("tex"), r = c.getBoundingClientRect(), dpr = window.devicePixelRatio||1;
+  c.width = r.width*dpr; c.height = r.height*dpr;
+  const x = c.getContext("2d"); x.scale(dpr,dpr); x.strokeStyle="#fff"; x.lineWidth=1.5;
+  let seed = [...docId()].reduce((a,ch)=>a*31+ch.charCodeAt(0),11)>>>0;
+  const rnd = ()=>((seed = (seed*1664525+1013904223)>>>0)/4294967296);
+  for(let i=0;i<12;i++){
+    const cx = r.width*(0.25+rnd()*0.8), cy = rnd()*r.height, s = 22+rnd()*60;
+    x.setLineDash([4,3]); x.beginPath(); x.arc(cx,cy,s,0,Math.PI*2); x.stroke();
+    x.setLineDash([]); x.beginPath(); x.arc(cx,cy,s*0.72,0,Math.PI*2); x.stroke();
+  }
+}
+function renderAll(){ renderSems(); renderSubjects(); renderStats(); renderDays(); renderList(); }
+
+/* ---------- Captura ---------- */
+function commit(li, inp){
+  const v = norm(inp.value);
+  if(v===null){ inp.classList.remove("invalid"); void inp.offsetWidth; inp.classList.add("invalid"); return false; }
+  inp.classList.remove("invalid");
+  const id = docId(), m = li.dataset.m, d = day(id, fecha);
+  const prev = d.s[m]==null ? "" : d.s[m];
+  inp.value = v;
+  if(prev===v) return true;
+  const before = totals(id, m).c;
+  d.s = Object.assign({}, d.s);
+  if(v==="") delete d.s[m]; else d.s[m] = v;
+  paintRow(li);
+  const after = totals(id, m).c;
+  if(before!==after){ const cal = li.querySelector(".cal"); cal.classList.remove("tick"); void cal.offsetWidth; cal.classList.add("tick"); }
+  if(v!=="") celebrate(li, Number(v), d.meta, before, after);
+  persist(id); renderStats(); renderDays();
+  return true;
+}
+function commitAct(li, inp){
+  const raw = inp.value.trim();
+  if(raw!=="" && !/^[0-2]$/.test(raw)){ inp.classList.remove("invalid"); void inp.offsetWidth; inp.classList.add("invalid"); return false; }
+  inp.classList.remove("invalid");
+  const id = docId(), m = li.dataset.m, d = day(id, fecha);
+  const prev = d.a[m]==null ? "" : d.a[m];
+  if(prev===raw) return true;
+  const before = totals(id, m).c;
+  d.a = Object.assign({}, d.a);
+  if(raw==="") delete d.a[m]; else d.a[m] = raw;
+  paintRow(li);
+  const after = totals(id, m).c;
+  if(before!==after){ const cal = li.querySelector(".cal"); cal.classList.remove("tick"); void cal.offsetWidth; cal.classList.add("tick"); }
+  if(raw===String(ACT) && animOn){
+    rowGlow(li, "done");
+    uniCheer(li);
+    if(after===10 && before!==10) setTimeout(()=>rain(["#FFC83D","#FFE08A",cur().color,tok("--top"),"#FF7AB6"], 5), 500);
+  } else if(raw==="1" && animOn){ rowGlow(li, "part"); }
+  persist(id); renderStats(); renderDays();
+  return true;
+}
+function commitMeta(){
+  const t = $("meta"), raw = t.value.trim(), id = docId();
+  let n = null;
+  if(raw!==""){
+    if(!/^\d{1,2}$/.test(raw)){ t.classList.remove("invalid"); void t.offsetWidth; t.classList.add("invalid"); t.value = peekDay(id,fecha).meta||""; return false; }
+    n = Number(raw);
+  }
+  const d = day(id, fecha);
+  if(n===d.meta) return true;
+  d.meta = n;
+  persist(id); renderStats(); renderDays();
+  for(const li of $("list").children) li.querySelectorAll("input").forEach(x=>x.disabled = n==null);
+  repaintRows();
+  return true;
+}
+$("meta").addEventListener("blur", commitMeta);
+$("meta").addEventListener("keydown", ev=>{
+  if(ev.key==="Enter"){ ev.preventDefault(); if(commitMeta()){ const f = $("list").querySelector(".row:not(.hidden) input.sel:not(:disabled)"); if(f) f.focus(); } }
+});
+$("fecha").addEventListener("change", ()=>{ if($("fecha").value){ fecha = $("fecha").value; renderAll(); } });
+$("otraSes").onclick = ()=>{
+  const base = fecha.slice(0,10), e = entry(docId());
+  if(!has(e.days[base])){ setStatus("Primero captura la 1ª sesión de este día", true); fecha = base; renderAll(); $("meta").focus(); return; }
+  let n = 1; for(const k of Object.keys(e.days)) if(k.slice(0,10)===base) n = Math.max(n, sesN(k));
+  fecha = base+"~"+(n+1); renderAll(); $("meta").focus();
+  setStatus((n+1)+"ª sesión del día: escribe cuántos sellos tocaban");
+};
+$("q").addEventListener("input", filter);
+
+$("fillMeta").onclick = ()=>{
+  const id = docId(), d = peekDay(id, fecha);
+  if(!has(d)){ setStatus("Primero escribe cuántos sellos tocaban", true); $("meta").focus(); return; }
+  const dd = day(id, fecha); dd.s = Object.assign({}, dd.s);
+  let n = 0;
+  for(const a of roster().alumnos) if(dd.s[a.m]==null){ dd.s[a.m] = String(dd.meta); n++; }
+  if(!n){ setStatus("Todos ya tienen captura este día"); return; }
+  persist(id); renderAll();
+  setStatus(n+" alumnos completados");
+  if(animOn) rain(["#FFC83D","#FFE08A",cur().color,"#FF7AB6","#5ED3F3"], 4);
+};
+$("fillUni").onclick = ()=>{
+  const id = docId();
+  if(!has(peekDay(id, fecha))){ setStatus("Primero escribe cuántos sellos tocaban", true); $("meta").focus(); return; }
+  if(!actOf(fecha)){ setStatus("Actitud y valores se captura en la 1ª sesión del día", true); return; }
+  const dd = day(id, fecha); dd.a = Object.assign({}, dd.a);
+  let n = 0;
+  for(const a of roster().alumnos) if(dd.a[a.m]==null){ dd.a[a.m] = String(ACT); n++; }
+  if(!n){ setStatus("Todos ya tienen actitud y valores este día"); return; }
+  persist(id); renderAll();
+  setStatus(n+" alumnos con uniforme completo");
+  if(animOn) uniCheer(null);
+};
+$("delDay").onclick = ()=>{
+  const box = $("confirmBox"); box.hidden=false; box.className="confirm";
+  box.innerHTML = '<span></span><button class="tool" id="cYes" type="button">Sí, borrar</button><button class="tool" id="cNo" type="button">Cancelar</button>';
+  box.firstChild.textContent = "¿Borrar los sellos del "+longDate(fecha)+" en "+cur().name+"?";
+  $("cNo").onclick = ()=>{ box.hidden=true; };
+  $("cYes").onclick = ()=>{ const e = entry(docId()); delete e.days[fecha]; persist(docId()); box.hidden=true; renderAll(); };
+};
+$("full").onclick = async ()=>{ try{ if(document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); }catch(e){ setStatus("Pantalla completa no disponible aquí", true); } };
+window.addEventListener("resize", ()=>{ drawTex(); sizeFx(); });
+
+/* ---------- Guardado ---------- */
+function saveView(){ try{ localStorage.setItem("p3-view", JSON.stringify({sem,subj})); }catch(e){} }
+function cacheLocal(){ try{ localStorage.setItem("p3-data", JSON.stringify(store)); }catch(e){} }
+function setStatus(t,err){ const s=$("status"); s.textContent=t; s.classList.toggle("err",!!err); }
+function persist(id){
+  entry(id).at = new Date().toISOString();
+  cacheLocal();
+  if(local){ setStatus("Guardado en esta computadora"); return; }
+  pending[id] = true; setStatus("Guardando…");
+  clearTimeout(timers[id]); timers[id] = setTimeout(()=>flush(id), 500);
+}
+async function flush(id){
+  if(writing[id] || !pending[id]) return;
+  pending[id]=false; writing[id]=true;
+  const e = store[id] || {days:{}};
+  const at = e.at || new Date().toISOString();
+  let ok = false;
+  try{
+    await fetch(EXEC, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({act:"sellos", k:KEY, doc:id, data:{days:e.days||{}, at}})});
+    await new Promise(r=>setTimeout(r,1300));
+    const docs = await traer();
+    ok = !!(docs[id] && docs[id].at === at);
+  }catch(err){ ok = false; }
+  writing[id]=false;
+  if(ok){ fallos[id]=0; if(!pending[id]) setStatus("Guardado en tu hoja"); }
+  else{
+    fallos[id]=(fallos[id]||0)+1;
+    if(fallos[id] < 6){ pending[id]=true; setStatus("Guardando… (reintento "+fallos[id]+")", true); setTimeout(()=>flush(id), 4000*fallos[id]); return; }
+    setStatus("No se pudo guardar en tu hoja; queda en este teléfono", true);
+  }
+  if(pending[id]) flush(id);
+}
+const fallos = {};
+
+/* ---------- Excel ---------- */
+const SHORT = {hum1:"Humanidades I",lyc1:"Lengua y Com. I",cs1:"Ciencias Sociales I",hum3:"Humanidades III",lyc3:"Lengua y Com. III",adm:"Administración",ch2:"Conciencia Histórica II",pcc:"Práctica y Colab. Ciudadana"};
+let dl = null;
+function loadXLSX(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise((ok, bad)=>{
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload = ()=> window.XLSX ? ok(window.XLSX) : bad(new Error("sin XLSX"));
+    s.onerror = bad; document.head.appendChild(s);
+  });
+}
+function buildBook(X){
+  const C = X.utils.encode_col;
+  const wb = X.utils.book_new();
+  const sheets = [];
+  for(const k of ["1","3","5"]){
+    const r = ROSTER.find(g=>g.key===k);
+    for(const s of PLAN[k]){
+      const id = "s"+k+"-"+s.id, e = store[id] || {days:{}};
+      const dates = Object.keys(e.days).filter(f=>has(e.days[f])).sort();
+      const name = (k+"° "+SHORT[s.id]).slice(0,31);
+      const nD = dates.length*2, cTot = C(3+nD), cExp = C(4+nD), cCal = C(5+nD), cLast = C(2+Math.max(nD,1));
+      const dd = f => { const d = parseD(f); return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+(sesN(f)>1 ? " ("+sesN(f)+"ª)" : ""); };
+      const head = ["No.","Matrícula","Nombre"].concat(dates.flatMap(f=>[dd(f), "AyV "+dd(f)]), ["Total","Esperados","Calificación"]);
+      const aoa = [
+        [s.name+" · "+SEMNAME[k]+" · Grupo "+r.grupo+" · Tercer parcial"],
+        ["","","Sellos que tocaban"].concat(dates.flatMap(f=>[e.days[f].meta, actOf(f)])),
+        head
+      ];
+      const num = v => v==null ? null : Number(v);
+      r.alumnos.forEach((a,i)=> aoa.push([i+1, a.m, a.n].concat(dates.flatMap(f=>[num(e.days[f].s[a.m]), num((e.days[f].a||{})[a.m])]))));
+      const ws = X.utils.aoa_to_sheet(aoa);
+      const first = 4, last = 3 + r.alumnos.length;
+      r.alumnos.forEach((a,i)=>{
+        const row = first+i, t = totals(id, a.m);
+        if(nD){
+          ws[cTot+row] = {t:"n", v:t.got, f:"SUM(D"+row+":"+cLast+row+")"};
+          ws[cExp+row] = {t:"n", v:t.exp, f:"SUM($D$2:$"+cLast+"$2)"};
+        } else { ws[cTot+row] = {t:"n", v:0}; ws[cExp+row] = {t:"n", v:0}; }
+        ws[cCal+row] = {t: t.c==null?"s":"n", v: t.c==null?"":t.c, f:"IF("+cExp+row+"=0,\"\",MIN(10,ROUND("+cTot+row+"/"+cExp+row+"*10,1)))"};
+      });
+      ws["!cols"] = [{wch:5},{wch:14},{wch:36}].concat(dates.flatMap(()=>[{wch:7},{wch:10}]), [{wch:8},{wch:10},{wch:13}]);
+      ws["!ref"] = "A1:"+cCal+last;
+      X.utils.book_append_sheet(wb, ws, name);
+      sheets.push({k, s, name, id, first, last, cCal, nD: dates.length, exp: dates.reduce((a,f)=>a+e.days[f].meta+actOf(f),0), n:r.alumnos.length});
+    }
+  }
+  const res = [["Tercer parcial · sellos diarios · SABES La Palma · Ago–Dic 2026"],[],["Semestre","Materia","Días con sellos","Sellos esperados","Alumnos","Promedio"]];
+  sheets.forEach(sh=> res.push([SEMNAME[sh.k], sh.s.name, sh.nD, sh.exp, sh.n, null]));
+  const wr = X.utils.aoa_to_sheet(res);
+  sheets.forEach((sh,i)=>{
+    const row = 4+i, q = "'"+sh.name.replace(/'/g,"''")+"'";
+    const cs = ROSTER.find(g=>g.key===sh.k).alumnos.map(a=>totals(sh.id,a.m).c).filter(c=>c!=null);
+    const avg = cs.length ? Math.round(cs.reduce((x,y)=>x+y,0)/cs.length*10)/10 : "";
+    wr["F"+row] = {t: avg===""?"s":"n", v: avg, f:"IFERROR(ROUND(AVERAGE("+q+"!"+sh.cCal+sh.first+":"+sh.cCal+sh.last+"),1),\"\")"};
+  });
+  wr["!cols"] = [{wch:14},{wch:34},{wch:15},{wch:16},{wch:9},{wch:10}];
+  X.utils.book_append_sheet(wb, wr, "Resumen");
+  wb.SheetNames.unshift(wb.SheetNames.pop());
+  return wb;
+}
+$("xls").onclick = async ()=>{
+  if(!dl) return;
+  setStatus("Armando Excel…");
+  try{
+    const X = await loadXLSX();
+    const buf = X.write(buildBook(X), {type:"array", bookType:"xlsx"});
+    await dl.save({filename: "Tercer parcial sellos "+todayStr()+".xlsx", data: buf});
+    setStatus("Excel descargado");
+  }catch(err){
+    if(err && err.code==="declined") setStatus("Descarga cancelada");
+    else if(err && (err.code==="unavailable"||err.code==="not_granted")){ $("xls").hidden = true; setStatus("La descarga no está disponible aquí", true); }
+    else setStatus("No se pudo armar el Excel; intenta de nuevo", true);
+  }
+};
+
+/* ---------- Celebraciones ---------- */
+let animOn = true;
+try{ animOn = localStorage.getItem("p3-anim") !== "0"; }catch(e){}
+$("anim").setAttribute("aria-pressed", animOn);
+$("anim").onclick = ()=>{ animOn = !animOn; $("anim").setAttribute("aria-pressed", animOn); try{ localStorage.setItem("p3-anim", animOn?"1":"0"); }catch(e){} };
+
+const fx = $("fx"), fctx = fx.getContext("2d");
+let parts = [], fxRunning = false;
+function sizeFx(){ const d = window.devicePixelRatio||1; fx.width = innerWidth*d; fx.height = innerHeight*d; fctx.setTransform(d,0,0,d,0,0); }
+sizeFx();
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function starPath(c, r){ c.beginPath(); for(let i=0;i<10;i++){ const a = Math.PI/5*i - Math.PI/2, rr = i%2? r*0.45 : r; c.lineTo(Math.cos(a)*rr, Math.sin(a)*rr); } c.closePath(); }
+function spawn(x, y, n, o){
+  for(let i=0;i<n;i++){
+    const a = o.spread==null ? Math.random()*Math.PI*2 : (-Math.PI/2 + (Math.random()-0.5)*o.spread);
+    const sp = o.speed*(0.45+Math.random()*0.75);
+    parts.push({x: x + (o.jx? (Math.random()-0.5)*o.jx : 0), y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp + (o.vy0||0), g:o.g, drag:o.drag||0.985,
+      life:0, max:o.life*(0.7+Math.random()*0.6), size:o.size*(0.6+Math.random()*0.8), rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.3,
+      shape:o.shapes[Math.floor(Math.random()*o.shapes.length)], color:o.colors[Math.floor(Math.random()*o.colors.length)], tw:Math.random()*6.28});
+  }
+  if(!fxRunning){ fxRunning = true; requestAnimationFrame(tick); }
+}
+function tick(){
+  fctx.clearRect(0,0,innerWidth,innerHeight);
+  parts = parts.filter(p=>p.life < p.max);
+  for(const p of parts){
+    p.life++; p.vx *= p.drag; p.vy = p.vy*p.drag + p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.tw += 0.25;
+    const t = p.life/p.max, alpha = t<0.75 ? 1 : 1-(t-0.75)/0.25;
+    fctx.save(); fctx.globalAlpha = Math.max(0,alpha); fctx.translate(p.x,p.y); fctx.rotate(p.rot); fctx.fillStyle = p.color;
+    if(p.shape==="star"){ starPath(fctx, p.size*(0.85+0.15*Math.sin(p.tw))); fctx.fill(); }
+    else if(p.shape==="rect"){ fctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2); }
+    else if(p.shape==="ring"){ fctx.strokeStyle=p.color; fctx.lineWidth=2; fctx.beginPath(); fctx.arc(0,0,p.size*0.6,0,6.28); fctx.stroke(); }
+    else { fctx.beginPath(); fctx.arc(0,0,p.size/2,0,6.28); fctx.fill(); }
+    fctx.restore();
+  }
+  if(parts.length) requestAnimationFrame(tick); else { fxRunning = false; fctx.clearRect(0,0,innerWidth,innerHeight); }
+}
+function rain(cols, waves){
+  for(let i=0;i<waves;i++) setTimeout(()=>spawn(innerWidth*(0.1+Math.random()*0.8), -20, 30, {speed:3, spread:Math.PI*2, vy0:3, g:0.09, drag:0.99, life:170, size:12, jx:140, shapes:["star","rect","rect","dot"], colors:cols}), i*140);
+}
+function rowGlow(li, k){ li.classList.remove("glow-done","glow-part"); void li.offsetWidth; li.classList.add("glow-"+k); setTimeout(()=>li.classList.remove("glow-"+k), 1500); }
+let cheerTimer = null;
+function cheer(big, who, ten){
+  const box = $("cheer");
+  $("cheerBig").textContent = big; $("cheerWho").textContent = who;
+  box.classList.toggle("ten", !!ten); box.style.setProperty("--dur", ten ? "2.4s" : "1.5s");
+  box.hidden = false; box.classList.remove("show"); void box.offsetWidth; box.classList.add("show");
+  clearTimeout(cheerTimer); cheerTimer = setTimeout(()=>{ box.hidden = true; box.classList.remove("show"); }, ten ? 2450 : 1550);
+}
+function celebrate(li, v, meta, before, after){
+  if(!animOn || meta==null) return;
+  const r = li.querySelector("input").getBoundingClientRect();
+  const x = r.left + r.width/2, y = r.top + r.height/2;
+  const gold = "#FFC83D", sc = cur().color, nombre = li.querySelector(".nm").textContent.split(" ")[0];
+  if(meta>0 && v >= meta){
+    rowGlow(li, "done");
+    const cols = [gold, "#FFE08A", sc, "#FF7AB6", "#5ED3F3"];
+    if(after===10 && before!==10){
+      spawn(x, y, 70, {speed:11, g:0.22, life:90, size:13, shapes:["star","star","dot"], colors:cols.concat(tok("--top"))});
+      setTimeout(()=>rain(cols.concat(tok("--top")), 5), 150);
+      cheer("10", "¡"+nombre+"!", true);
+    } else {
+      spawn(x, y, 40, {speed:8, g:0.2, life:70, size:11, shapes:["star","star","dot"], colors:cols});
+      cheer("¡Completo!", nombre, false);
+    }
+  } else if(v > 0){
+    rowGlow(li, "part");
+    spawn(x, y, 12, {speed:4, g:0.06, life:45, size:8, shapes:["dot","ring"], colors:[sc, gold]});
+  }
+}
+
+/* ---------- Uniforme ---------- */
+let uniTimer = null;
+function uniCheer(li){
+  const box = $("uni");
+  $("uniWho").textContent = li ? li.querySelector(".nm").textContent.split(" ")[0] : "¡Todo el grupo!";
+  box.style.setProperty("--shirt", cur().color);
+  box.hidden = false; box.classList.remove("show"); void box.offsetWidth; box.classList.add("show");
+  const cols = ["#FFC83D","#FFE08A",cur().color,"#FF7AB6","#5ED3F3","#7BE495"];
+  const burst = ()=>{ const r = $("uniShirt").getBoundingClientRect(); if(!r.width) return;
+    const x = r.left + r.width/2, y = r.top + r.height*0.35;
+    spawn(x, y, 46, {speed:10, spread:Math.PI*0.9, g:0.24, life:85, size:11, shapes:["star","rect","dot","star"], colors:cols});
+    spawn(x - r.width*0.42, y, 14, {speed:7, spread:Math.PI*0.6, g:0.22, life:70, size:9, shapes:["star","dot"], colors:cols});
+    spawn(x + r.width*0.42, y, 14, {speed:7, spread:Math.PI*0.6, g:0.22, life:70, size:9, shapes:["star","dot"], colors:cols}); };
+  setTimeout(burst, 260); setTimeout(burst, 760);
+  if(!li) setTimeout(()=>rain(cols, 4), 300);
+  clearTimeout(uniTimer); uniTimer = setTimeout(()=>{ box.hidden = true; box.classList.remove("show"); }, 2150);
+}
+
+/* ---------- Historial ---------- */
+function openHist(a){
+  const id = docId(), e = store[id] || {days:{}}, t = totals(id, a.m);
+  const dates = Object.keys(e.days).filter(f=>has(e.days[f])).sort();
+  $("hName").textContent = a.n;
+  $("hSub").textContent = cur().name+" · lleva "+t.got+" de "+t.exp+" sellos · calificación "+fmt(t.c);
+  const body = $("hBody"); body.innerHTML = "";
+  let sinUni = 0;
+  for(const f of dates){
+    const d = e.days[f], sv = d.s[a.m], av = (d.a||{})[a.m];
+    const tr = document.createElement("tr");
+    const uni = !actOf(f) ? ["En la 1ª sesión","u-na"] : av==null ? ["Sin captura","u-na"] : Number(av)>=ACT ? ["Completo","u-ok"] : Number(av)===1 ? ["Incompleto","u-half"] : ["Sin uniforme","u-no"];
+    if(actOf(f) && (av==null || Number(av)<ACT)) sinUni++;
+    tr.innerHTML = '<td></td><td class="n"></td><td><span class="pill"></span></td>';
+    tr.children[0].textContent = longDate(f);
+    tr.children[1].textContent = (sv==null?0:sv)+" / "+d.meta;
+    if(sv==null || Number(sv)<d.meta) tr.children[1].classList.add("short");
+    tr.children[2].firstChild.textContent = uni[0]+(av!=null && actOf(f) ? " ("+av+")" : "");
+    tr.children[2].firstChild.classList.add(uni[1]);
+    body.appendChild(tr);
+  }
+  if(!dates.length){ const tr = document.createElement("tr"); tr.innerHTML = '<td colspan="3" class="emptyh">Todavía no hay días capturados en esta materia.</td>'; body.appendChild(tr); }
+  $("hUni").textContent = dates.length ? (sinUni ? sinUni+(sinUni===1?" día":" días")+" sin uniforme completo" : "Uniforme completo todos los días") : "";
+  $("hist").hidden = false; $("hClose").focus();
+}
+function closeHist(){ $("hist").hidden = true; }
+$("hClose").onclick = closeHist;
+$("hist").addEventListener("click", ev=>{ if(ev.target.id==="hist") closeHist(); });
+document.addEventListener("keydown", ev=>{ if(ev.key==="Escape" && !$("hist").hidden) closeHist(); });
+
+/* ---------- Arranque ---------- */
+$("fecha").value = fecha.slice(0,10);
+renderAll();
+setStatus("Guardado en esta computadora");
+const EXEC = "https://script.google.com/macros/s/AKfycbxbO7J05FGsrp3yGJO_Lgsdy8eX6wawZMWuG6hPJKkbP0VHC6b7k94BIm2IiVm9CSQqAg/exec";
+let KEY = ""; try{ KEY = localStorage.getItem("p3-key")||""; }catch(e){}
+async function traer(){
+  const r = await fetch(EXEC+"?q=sellos_todo&k="+encodeURIComponent(KEY)).then(x=>x.json());
+  if(!r || !r.ok) throw new Error("clave");
+  return r.docs||{};
+}
+function aplicarServidor(docs, primera){
+  let changed = false;
+  for(const [id,b] of Object.entries(docs)){
+    if(pending[id] || writing[id]) continue;
+    const mine = store[id];
+    if(mine && mine.at && (!b.at || mine.at > b.at)){ pending[id]=true; flush(id); continue; }
+    const next = {days: JSON.parse(JSON.stringify(b.days||{})), at: b.at||null};
+    if(JSON.stringify(next)!==JSON.stringify(mine||null)){ store[id]=next; changed=true; }
+  }
+  if(primera){
+    for(const id of Object.keys(store)){
+      const e = store[id];
+      if(!docs[id] && e && Object.keys(e.days||{}).length){ pending[id]=true; flush(id); }
+    }
+  }
+  if(changed){
+    cacheLocal();
+    const active = document.activeElement && document.activeElement.id;
+    renderStats(); renderDays(); renderList();
+    if(active && $(active)) $(active).focus();
+  }
+}
+function pedirClave(msg){
+  $("llaveMsg").textContent = msg || "Escribe tu clave de maestro. Solo se pide una vez en este teléfono.";
+  $("llave").hidden = false; $("llaveIn").value = ""; setTimeout(()=>$("llaveIn").focus(), 50);
+}
+$("llaveBtn").onclick = ()=>{
+  const v = $("llaveIn").value.trim(); if(!v) return;
+  KEY = v; try{ localStorage.setItem("p3-key", KEY); }catch(e){}
+  $("llave").hidden = true; conectar();
+};
+$("llaveIn").addEventListener("keydown", ev=>{ if(ev.key==="Enter") $("llaveBtn").click(); });
+let sondeo = null;
+async function conectar(){
+  if(!KEY){ pedirClave(); return; }
+  setStatus("Conectando…");
+  try{
+    const docs = await traer();
+    coll = true; local = false;
+    aplicarServidor(docs, true);
+    setStatus("Conectado a tu hoja");
+    if(!sondeo) sondeo = setInterval(async ()=>{
+      if(document.hidden || Object.values(pending).some(Boolean) || Object.values(writing).some(Boolean)) return;
+      try{ aplicarServidor(await traer(), false); }catch(e){}
+    }, 45000);
+  }catch(e){
+    local = true;
+    if(String(e && e.message)==="clave"){ try{ localStorage.removeItem("p3-key"); }catch(x){} KEY=""; pedirClave("Esa clave no es correcta. Escríbela otra vez."); }
+    else setStatus("Sin conexión; se guarda en este teléfono", true);
+  }
+}
+conectar();
+</script>
+
+
+</body>
+</html>

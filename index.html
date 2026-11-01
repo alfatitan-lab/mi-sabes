@@ -267,6 +267,30 @@
   .aviso{margin-top:14px;padding:12px 14px;border:1.5px solid var(--gold-line);border-left-width:6px;border-radius:12px;background:linear-gradient(135deg,var(--gold-a) 0%,var(--gold-b) 100%);font-size:14px;}
   .aviso b{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:2px;}
   .aviso span{overflow-wrap:anywhere;}
+  .vivo{margin-top:18px;padding:14px 16px;border:1.5px solid var(--blue);border-radius:14px;background:var(--card);}
+  .vv-k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--blue);}
+  .vv-top{display:flex;align-items:center;gap:14px;margin-top:6px;}
+  .vv-big{font-family:var(--font-display);font-weight:800;font-size:56px;line-height:1;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;}
+  .n-b{color:var(--red);} .n-m{color:var(--orange);} .n-g{color:var(--ok);} .n-t{color:var(--blue);}
+  .vv-tx b{display:block;font-family:var(--font-display);font-weight:800;font-size:17px;line-height:1.15;}
+  .vv-tx span{font-size:13px;color:var(--muted);}
+  .vv-s{margin-top:8px;font-size:12.5px;color:var(--muted);}
+  .vv-m{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px;}
+  .vv-m .r1{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:14px;}
+  .vv-m .r1 span:last-child{font-variant-numeric:tabular-nums;}
+  .vv-m .r2{font-size:12px;color:var(--muted);}
+  .vv-bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px;}
+  .vv-bar i{display:block;height:100%;background:var(--blue);}
+  .vv-det{margin-top:6px;} .vv-det summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--blue);}
+  .vv-det ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted);display:grid;gap:3px;}
+  .vv-top10{margin-top:16px;} .vv-top10 h3{font-size:15px;}
+  .vv-top10 ol{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px;}
+  .vv-top10 li{display:flex;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px;}
+  .vv-top10 li.yo{border-color:var(--blue);background:var(--blue-soft);font-weight:700;}
+  .vv-top10 .p{flex:none;width:22px;font-family:var(--font-display);font-weight:800;}
+  .vv-top10 .nm{flex:1;min-width:0;} .vv-top10 .nt{font-weight:800;font-variant-numeric:tabular-nums;}
+  .vv-link{display:inline-block;margin-top:10px;font-weight:700;font-size:13px;color:var(--blue);}
+  .vv-at{margin-top:10px;font-size:11.5px;color:var(--muted);}
   .inst{margin-top:18px;padding:14px 16px;border:1.5px solid var(--blue);border-radius:14px;background:var(--blue-soft);}
   .inst .instrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;}
   .inst .instrow .go{margin-top:0;}
@@ -343,6 +367,7 @@
       <button type="button" data-g="5to" aria-pressed="false">5to semestre</button>
     </div>
     <div id="avisos"></div>
+    <div id="vivoIni"></div>
     <div class="hero" aria-live="polite">
       <div class="kicker" id="kicker">Te quedan</div>
       <div class="big" id="big">–</div>
@@ -811,12 +836,12 @@ function evHTML(x, withWhen, today){
 // Viernes de la semana anterior al cierre del 3er parcial del 6.º semestre. Fechas estimadas hasta que salga el calendario oficial.
 const GRAD = {"5to":{f:"2027-06-04", despues:1}, "3ro":{f:"2028-06-02", despues:3}, "1ro":{f:"2029-06-01", despues:5}};
 function fraseGrad(g, dias){
-  if (dias <= 0) return "Lo lograste. Felicidades, egresado.";
-  if (dias <= 30) return "Ya casi: es la última curva antes de la ceremonia.";
-  if (dias <= 100) return "Ya se ve la meta. Termina fuerte.";
-  if (g === "5to") return "Cada día te acerca a tu toga y tu birrete.";
-  if (g === "3ro") return "Vas a mitad del camino: lo que haces hoy te lleva al escenario.";
-  return "Apenas empiezas, y cada día te acerca al escenario.";
+  if (dias <= 0) return "Terminas esto. Empieza lo demás.";
+  if (dias <= 30) return "Pocos días. Que cuenten.";
+  if (dias <= 100) return "Ya se ve. Sigue.";
+  if (g === "5to") return "Hoy también cuenta, aunque no lo parezca.";
+  if (g === "3ro") return "Ni te detengas ni te apures. Camina.";
+  return "Falta mucho. Tienes tiempo. Úsalo.";
 }
 function renderGrad(remDays){
   const G = GRAD[group], d = fromIso(G.f), dias = dayDiff(d, startOfToday());
@@ -1310,11 +1335,12 @@ document.getElementById("tog").addEventListener("click", function(e){
 });
 function mostrarDatos(rec, auto){
   if (GRUPO_DE[rec.g]) setGroup(GRUPO_DE[rec.g]);
-  form.hidden = true; view.innerHTML = pintar(rec); view.hidden = false; window.scrollTo(0,0);
+  form.hidden = true; view.innerHTML = '<div id="vivoDet"></div>' + pintar(rec); view.hidden = false; window.scrollTo(0,0);
   document.getElementById("salir").addEventListener("click", function(){ view.innerHTML = ""; view.hidden = true; form.hidden = false; prellenar(); window.scrollTo(0,0); });
   const ol = document.getElementById("olvidar");
   if (ol) ol.addEventListener("click", function(){ olvidarCred(); view.innerHTML = ""; view.hidden = true; form.hidden = false; prellenar(); window.scrollTo(0,0); });
   contar(rec, auto);
+  cargarVivo();
   const lug = Object.keys(rec.top || {}).map(function(k){ return rec.top[k].p; });
   const mejor = lug.length ? Math.min.apply(null, lug) : 99;
   if (mejor <= 10) setTimeout(function(){ const pe = view.querySelector('.podio[data-p="' + mejor + '"]'); festejar(pe, mejor); }, 450);
@@ -1408,6 +1434,70 @@ function iniciarInstalacion(){
   });
 }
 try { if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function(){}); } catch(e){}
+/* ========= tu parcial en vivo (sellos desde la hoja) ========= */
+const SELLOS_DEMO = null; // solo la versión previa muestra datos de ejemplo
+const SELLOS_KEY = "mi-sabes-sellos";
+let vivoR = null;
+function idDeMatricula(mat){ return crypto.subtle.digest("SHA-256", enc.encode("id|" + String(mat).replace(/\s+/g,"").toUpperCase())).then(function(b){ return hex(b).slice(0,16); }); }
+function notaCls(c){ return c == null ? "" : c >= 10 ? "t" : c >= 8 ? "g" : c >= 6 ? "m" : "b"; }
+function notaTxt(c){ return c == null ? "–" : (Number.isInteger(c) ? String(c) : c.toFixed(1)); }
+const MESES_C = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"], DIAS_C = ["dom","lun","mar","mié","jue","vie","sáb"];
+function diaCorto(f){
+  const ses = f.indexOf("~") >= 0 ? Number(f.split("~")[1]) : 1, p = f.slice(0,10).split("-").map(Number), d = new Date(p[0], p[1]-1, p[2]);
+  return DIAS_C[d.getDay()] + " " + d.getDate() + " " + MESES_C[d.getMonth()] + (ses > 1 ? " (" + ses + "ª sesión)" : "");
+}
+function pintarVivo(r, chico){
+  let h = '<section class="vivo" aria-live="polite"><div class="vv-k">Tu parcial en vivo</div>';
+  if (r.promedio == null){ return h + '<p class="vv-s">Tu maestro todavía no ha capturado sellos de este parcial.</p></section>'; }
+  const top = r.lugar != null && r.lugar <= 10;
+  h += '<div class="vv-top"><div class="vv-big n-' + notaCls(r.promedio) + '">' + notaTxt(r.promedio) + '</div><div class="vv-tx"><b>' +
+    (top ? "Estás en el top 10: lugar " + r.lugar : "Vas en el lugar " + r.lugar) + '</b><span>de ' + r.de + ' en tu grupo</span></div></div>';
+  h += '<p class="vv-s">Es el promedio de tus sellos y tu actitud en las materias que tu maestro ya capturó. Cambia cada vez que captura.</p>';
+  h += '<ul class="vv-m">' + r.materias.filter(function(m){ return m.exp > 0; }).map(function(m){
+    let li = '<li><div class="r1"><span>' + esc(m.nombre) + '</span><span class="n-' + notaCls(m.c) + '">' + notaTxt(m.c) + '</span></div>' +
+      '<div class="r2">Llevas ' + m.got + ' de ' + m.exp + ' sellos</div><div class="vv-bar"><i style="width:' + Math.min(100, Math.round(m.got / m.exp * 100)) + '%"></i></div>';
+    if (!chico) li += '<details class="vv-det"><summary>Día por día</summary><ul>' + m.dias.map(function(d){
+      const av = d.act ? (d.a == null ? "sin captura de actitud" : d.a >= 2 ? "uniforme completo" : d.a === 1 ? "uniforme incompleto" : "sin uniforme") : "";
+      return "<li>" + diaCorto(d.f) + ": " + (d.s == null ? 0 : d.s) + " de " + d.meta + " sellos" + (av ? " · " + av : "") + "</li>";
+    }).join("") + '</ul></details>';
+    return li + "</li>";
+  }).join("") + "</ul>";
+  if (chico) h += '<a class="vv-link" href="#mis-datos">Ver el detalle y el top 10</a>';
+  else {
+    h += '<div class="vv-top10"><h3>Top 10 de tu grupo</h3><ol>' + r.top.map(function(x, i){
+      return '<li' + (x.yo ? ' class="yo"' : '') + '><span class="p">' + (i+1) + '</span><span class="nm">' + esc(x.n) + (x.yo ? " (tú)" : "") + '</span><span class="nt n-' + notaCls(x.c) + '">' + notaTxt(x.c) + '</span></li>';
+    }).join("") + '</ol>' + (!top ? '<p class="vv-s">Tú vas en el lugar ' + r.lugar + ' con ' + notaTxt(r.promedio) + '.</p>' : "") + '</div>';
+  }
+  if (r.at){ const d = new Date(r.at); if (!isNaN(d)) h += '<div class="vv-at">Actualizado el ' + d.getDate() + " " + MESES_C[d.getMonth()] + '</div>'; }
+  return h + "</section>";
+}
+function dibujarVivo(){
+  const ini = document.getElementById("vivoIni"); if (ini) ini.innerHTML = vivoR ? pintarVivo(vivoR, true) : "";
+  const det = document.getElementById("vivoDet");
+  if (det){
+    det.innerHTML = vivoR ? pintarVivo(vivoR, false) : "";
+    if (vivoR && vivoR.lugar != null && vivoR.lugar <= 10){
+      let clave = ""; try { clave = (new Date()).toDateString() + "|" + vivoR.lugar; } catch(e){}
+      let visto = ""; try { visto = localStorage.getItem("mi-sabes-vivo-fest") || ""; } catch(e){}
+      if (clave && visto !== clave){
+        try { localStorage.setItem("mi-sabes-vivo-fest", clave); } catch(e){}
+        setTimeout(function(){ confeti(vivoR.lugar <= 3); vibrar(vivoR.lugar <= 3 ? [60, 40, 60, 40, 60, 40, 220] : [50, 50, 50, 50, 120]); }, 500);
+      }
+    }
+  }
+}
+async function cargarVivo(){
+  if (SELLOS_DEMO){ vivoR = SELLOS_DEMO; dibujarVivo(); return; }
+  if (!COUNTER_URL) return;
+  let id = lastId;
+  if (!id){ const c = leerCred(); if (c){ try { id = await idDeMatricula(c.m); } catch(e){} } }
+  if (!id) return;
+  try { const k = JSON.parse(localStorage.getItem(SELLOS_KEY) || "null"); if (k && k.id === id && k.r){ vivoR = k.r; dibujarVivo(); } } catch(e){}
+  try {
+    const r = await fetch(COUNTER_URL + "?q=sellos&id=" + id + "&t=" + Date.now()).then(function(x){ return x.json(); });
+    if (r && r.ok){ vivoR = r; try { localStorage.setItem(SELLOS_KEY, JSON.stringify({id:id, r:r})); } catch(e){} dibujarVivo(); }
+  } catch(e){}
+}
 /* ========= pestañas ========= */
 const TABS = ["inicio","horario","mis-datos"];
 const SECS = {"inicio":"s-inicio","horario":"s-horario","mis-datos":"s-datos"};
@@ -1427,6 +1517,7 @@ document.addEventListener("visibilitychange", function(){ if (!document.hidden){
 cargarContenido();
 renderInicio(); showTab();
 iniciarInstalacion();
+cargarVivo();
 </script>
 
 </body>
