@@ -700,7 +700,7 @@ document.getElementById("next2").addEventListener("click", function(){ shown = n
 document.getElementById("hoy").addEventListener("click", function(){ shown = clampMonth(startOfToday()); selected = iso(startOfToday()); renderCal(); });
 
 /* ========= calificaciones ========= */
-const COUNTER_URL = ""; // dirección del contador (Apps Script); vacío = sin contador
+const COUNTER_URL = "https://script.google.com/macros/s/AKfycbxbO7J05FGsrp3yGJO_Lgsdy8eX6wawZMWuG6hPJKkbP0VHC6b7k94BIm2IiVm9CSQqAg/exec"; // dirección del contador (Apps Script); vacío = sin contador
 const CRED_KEY = "mi-sabes-datos";
 function leerCred(){ try{ const c = JSON.parse(localStorage.getItem(CRED_KEY) || "null"); return c && c.m && c.p ? c : null; }catch(e){ return null; } }
 function guardarCred(m, p){ try{ localStorage.setItem(CRED_KEY, JSON.stringify({m:m, p:p})); }catch(e){} }
