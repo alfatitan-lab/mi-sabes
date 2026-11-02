@@ -145,6 +145,37 @@
   .mats li.tch b{font-family:var(--font-display);font-weight:800;font-size:15px;}
   .mats li.tch span{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;text-align:right;}
   .mats li.fin .hr{color:var(--muted);}
+  /* calendario */
+  .calnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 10px;}
+  .calmes{font-family:var(--font-display);font-weight:800;font-size:18px;text-transform:capitalize;text-align:center;}
+  .calleg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:4px 0 10px;font-size:12px;}
+  .calleg span{display:flex;align-items:center;gap:8px;min-width:0;}
+  .sw{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;}
+  .calleg b{font-weight:400;}
+  .sw svg{width:14px;height:14px;}
+  .calg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;}
+  .cald{margin:10px 0 4px;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:center;}
+  .cc{position:relative;aspect-ratio:1/1;min-width:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:1px solid transparent;background:var(--card);border-radius:9px;color:var(--fg);font:inherit;cursor:pointer;}
+  .cc b{font-size:12px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums;}
+  .cc svg{width:19px;height:19px;}
+  .cc.cx-fin,.cc.cx-rec,.sw.cx-fin{background:transparent;border:1px dashed var(--line);color:var(--muted);}
+  .cc.cx-clase,.sw.cx-clase{background:var(--blue-soft);color:var(--fg);}
+  .cc.cx-sin,.sw.cx-sin{background:repeating-linear-gradient(135deg,var(--k-sin-soft) 0 4px,transparent 4px 8px);border:1px solid var(--k-sin);color:var(--fg);}
+  .cc.cx-eval,.sw.cx-eval{background:var(--k-eval);color:var(--on-fill);}
+  .cc.cx-tram,.sw.cx-tram{background:var(--k-tram);color:var(--on-fill);}
+  .cc.cx-aviso,.sw.cx-aviso{background:var(--k-aviso);color:var(--on-fill);}
+  .cc.cx-reinicio,.sw.cx-reinicio{background:var(--mari);color:var(--on-fill);}
+  .cc.cx-reinicio svg{width:24px;height:24px;}
+  .cc.cx-ultimo,.sw.cx-ultimo{background:linear-gradient(160deg,#F7E7A1,#D4AF37 55%,#B8921F);color:#2a1f05;}
+  .cc.cx-ultimo svg{width:22px;height:22px;}
+  .cc.vacio{visibility:hidden;pointer-events:none;}
+  .cc.is-pas{opacity:.5;}
+  .cc.is-hoy{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--fg);}
+  .cc.is-sel{outline:2px dashed var(--fg);outline-offset:3px;}
+  .cdet{margin-top:14px;}
+  .cdet h3{margin:0 0 4px;font-size:15px;}
+  .cdet .estado{margin:0 0 8px;font-size:13px;color:var(--muted);}
+  .sigsem{margin:22px 0 4px;font-size:16px;}
   /* semana por semana */
   details{margin-top:18px;}
   summary{cursor:pointer;font-size:14px;font-weight:700;padding:8px 0;}
@@ -470,23 +501,22 @@
     </div>
 
 
-    <details id="matdet">
-      <summary>Cuántas horas te quedan de cada materia, por maestro</summary>
-      <p class="hint">Cuenta los módulos de 50 minutos que faltan hasta el 4 de diciembre. No incluye el receso ni Activa-Mente. El martes 3 y el miércoles 11 de noviembre no cuentan las clases que no se van a dar, y el martes 3 tampoco las primeras horas de 5to, que entra a las 10:30.</p>
-      <ul class="mats" id="mats"></ul>
-    </details>
-
-    <details>
-      <summary>Ver el semestre semana por semana</summary>
-      <p class="hint">Cada barra es un módulo de 50 minutos. Hay seis por día.</p>
-      <div class="legend">
-        <span><i class="lg-on"></i>Por venir</span><span><i class="lg-past"></i>Ya pasó</span>
-        <span><i class="lg-off"></i>Sin clase ese módulo</span><span><i class="lg-hol"></i>Asueto</span>
+    <div class="sec cal" id="calSec">
+      <h2>Calendario</h2>
+      <div class="calnav">
+        <button class="nav" id="cprev" type="button" aria-label="Mes anterior">‹</button>
+        <div class="calmes" id="cmes" aria-live="polite"></div>
+        <button class="nav" id="cnext" type="button" aria-label="Mes siguiente">›</button>
       </div>
-      <div class="dow"><span></span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span></div>
-      <div id="weeks"></div>
-      <details id="pastWrap"><summary id="pastSum">Semanas que ya pasaron</summary><div id="past" style="margin-top:10px"></div></details>
-    </details>
+      <div class="legend calleg" id="cleg"></div>
+      <div class="calg cald" aria-hidden="true"><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span></div>
+      <div class="calg" id="cgrid"></div>
+      <div class="cdet" id="cdet" aria-live="polite"></div>
+      <button class="hoy" id="choy" type="button" style="margin-top:12px">Ir a hoy</button>
+      <h3 class="sigsem">Siguiente semestre</h3>
+      <p class="hint" id="csig"></p>
+      <ul class="evs" id="csigev"></ul>
+    </div>
   </section>
 
   <!-- HORARIO -->
@@ -991,29 +1021,79 @@ function renderInicio(){
   const nx = EVENTS.filter(function(x){ return evFor(x) && x.e >= t; }).slice(0,5);
   document.getElementById("next").innerHTML = nx.length ? nx.map(function(x){ return evHTML(x, true, s.today); }).join("") : '<li class="none">No hay nada más marcado por ahora.</li>';
 
-  const mats = porMateria(group, now);
-  const by = {};
-  mats.forEach(function(m){ const k = PROF[group][m.n] || ""; (by[k] = by[k] || {n:k, r:0, list:[]}); by[k].r += m.r; by[k].list.push(m); });
-  const tchs = Object.keys(by).map(function(k){ return by[k]; })
-    .sort(function(a,b){ return (a.n === "") - (b.n === "") || b.r - a.r; });
-  document.getElementById("mats").innerHTML = tchs.map(function(tc){
-    return '<li class="tch"><b>' + esc(tc.n || "Sin maestro en el horario") + '</b><span>' + tc.list.length + (tc.list.length === 1 ? " materia" : " materias") + ' · ' + fmtHM(tc.r) + '</span></li>' +
-    tc.list.map(function(m){
-      const pc = m.t ? Math.round(m.r / m.t * 100) : 0;
-      return '<li class="' + (m.r ? "" : "fin") + '"><div class="r1"><span class="nm">' + esc(m.n) + '</span><span class="hr">' + (m.r ? fmtHM(m.r) : "Terminó") + '</span></div>' +
-        '<div class="bar2" aria-hidden="true"><i style="width:' + pc + '%"></i></div><small>De ' + fmtHM(m.t) + ' del semestre</small></li>';
-    }).join("");
-  }).join("");
-
-  const weeks = [];
-  for (let i = 0; i < s.days.length; i += 5) weeks.push(s.days.slice(i, i + 5));
-  let c = weeks.findIndex(function(w){ return w[w.length-1].d >= s.today; });
-  if (c < 0) c = weeks.length;
-  document.getElementById("weeks").innerHTML = weeks.slice(c).map(weekHTML).join("");
-  document.getElementById("past").innerHTML = weeks.slice(0, c).map(weekHTML).join("");
-  document.getElementById("pastWrap").hidden = c === 0;
-  document.getElementById("pastSum").textContent = "Semanas que ya pasaron (" + c + ")";
+  renderCal();
 }
+
+/* ========= calendario ========= */
+const CAL_MIN = 2026 * 12 + 7, CAL_MAX = 2027 * 12 + 6;
+let calM = null, calSel = null;
+const CAL_ICO = {
+  reinicio: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',
+  ultimo: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c3 2.4 9 2.4 12 0v-4.5"/><path d="M22 9v6"/>',
+  eval: '<path d="M4 20l4.5-1L19 8.5 15.5 5 5 15.5z"/><path d="M13.5 7l3.5 3.5"/>',
+  tram: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10.5h18"/><path d="M7 15h3"/>',
+  aviso: '<path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>'
+};
+const CAL_NOM = {clase:"Hay clase", reinicio:"Regresan las clases", ultimo:"Último día o fin del periodo", eval:"Parciales y exámenes", tram:"Trámites y pagos", aviso:"Aviso", sin:"Sin clases", fin:"Fin de semana o receso"};
+function calIco(k){ return CAL_ICO[k] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + CAL_ICO[k] + '</svg>' : ""; }
+function calEvents(key){ return EVENTS.filter(function(x){ return evFor(x) && key >= x.s && key <= x.e; }); }
+function calBase(d){
+  if (d.getDay() === 0 || d.getDay() === 6) return false;
+  const key = iso(d);
+  if (EVENTS.some(function(x){ return evFor(x) && x.k === "sin" && key >= x.s && key <= x.e; })) return false;
+  return (d >= START && d <= END) || (d >= VUELTA_GRAD && d <= BASE_FIN_GRAD);
+}
+function calReinicio(d){
+  if (!calBase(d)) return false;
+  if (iso(d) === iso(START) || iso(d) === iso(VUELTA_GRAD)) return true;
+  let n = 0, p = addDays(d, -1);
+  for (let i = 0; i < 40; i++){
+    if (p.getDay() !== 0 && p.getDay() !== 6){ if (calBase(p)) break; n++; }
+    p = addDays(p, -1);
+  }
+  return n >= 3;
+}
+function calEstado(d){
+  const key = iso(d), dow = d.getDay(), evs = calEvents(key);
+  const has = function(k){ return evs.some(function(e){ return e.k === k; }); };
+  if (dow === 0 || dow === 6) return {c:"fin", evs:evs, clase:false, motivo:"Fin de semana."};
+  if (has("sin")){ const e = evs.filter(function(x){ return x.k === "sin"; })[0]; return {c:"sin", evs:evs, clase:false, motivo:e.t + "."}; }
+  const base = calBase(d);
+  if (calReinicio(d)) return {c:"reinicio", evs:evs, clase:true, motivo:"Regresan las clases."};
+  if (evs.some(function(e){ return /^(último día de clases|termina el periodo escolar)/i.test(e.t); })) return {c:"ultimo", evs:evs, clase:base, motivo:base ? "" : "Receso entre semestres."};
+  const c = has("eval") ? "eval" : has("tram") ? "tram" : has("aviso") ? "aviso" : "";
+  if (c) return {c:c, evs:evs, clase:base, motivo:base ? "" : "Receso entre semestres."};
+  return base ? {c:"clase", evs:evs, clase:true, motivo:""} : {c:"rec", evs:evs, clase:false, motivo:"Receso entre semestres."};
+}
+function renderCal(){
+  const hoy = startOfToday(), hm = hoy.getFullYear() * 12 + hoy.getMonth();
+  if (calM === null) calM = Math.max(CAL_MIN, Math.min(CAL_MAX, hm));
+  const y = Math.floor(calM / 12), m = calM % 12, first = new Date(y, m, 1), nd = new Date(y, m + 1, 0).getDate();
+  document.getElementById("cmes").textContent = MESES_L[m] + " " + y;
+  document.getElementById("cprev").disabled = calM <= CAL_MIN;
+  document.getElementById("cnext").disabled = calM >= CAL_MAX;
+  document.getElementById("cleg").innerHTML = ["clase","reinicio","ultimo","eval","tram","aviso","sin","fin"].map(function(k){ return '<span><b class="sw cx-' + k + '">' + calIco(k) + '</b>' + CAL_NOM[k] + '</span>'; }).join("");
+  let h = "";
+  for (let i = 0; i < (first.getDay() + 6) % 7; i++) h += '<button class="cc vacio" type="button" tabindex="-1" aria-hidden="true"></button>';
+  for (let n = 1; n <= nd; n++){
+    const d = new Date(y, m, n), key = iso(d), st = calEstado(d);
+    h += '<button type="button" class="cc cx-' + st.c + (d < hoy ? " is-pas" : "") + (key === iso(hoy) ? " is-hoy" : "") + (key === calSel ? " is-sel" : "") + '" data-d="' + key + '" aria-label="' + DIAS_L[d.getDay()] + " " + n + " de " + MESES_L[m] + (st.clase ? ", hay clase" : ", sin clases") + '"><b>' + n + '</b>' + calIco(st.c) + '</button>';
+  }
+  document.getElementById("cgrid").innerHTML = h;
+  const det = document.getElementById("cdet");
+  if (calSel && calSel.slice(0, 7) === y + "-" + String(m + 1).padStart(2, "0")){
+    const d = fromIso(calSel), st = calEstado(d);
+    det.innerHTML = '<h3>' + DIAS_L[d.getDay()].charAt(0).toUpperCase() + DIAS_L[d.getDay()].slice(1) + " " + d.getDate() + " de " + MESES_L[d.getMonth()] + '</h3><p class="estado">' + (st.clase ? "Hay clase." + (st.c === "reinicio" ? " Regresan las clases." : "") : "No hay clase. " + st.motivo) + '</p>' + (st.evs.length ? '<ul class="evs">' + st.evs.map(function(x){ return evHTML(x, false); }).join("") + '</ul>' : "");
+  } else det.innerHTML = '<p class="hint">Toca un día para ver qué hay.</p>';
+  let cl = 0; for (let d = new Date(VUELTA_GRAD); d <= BASE_FIN_GRAD; d = addDays(d, 1)) if (diaDeClaseGrad(d)) cl++;
+  document.getElementById("csig").textContent = "Regresas a clases el " + DIAS_L[VUELTA_GRAD.getDay()] + " " + VUELTA_GRAD.getDate() + " de " + MESES_L[VUELTA_GRAD.getMonth()] + " de " + VUELTA_GRAD.getFullYear() + ". El periodo termina el " + DIAS_L[BASE_FIN_GRAD.getDay()] + " " + BASE_FIN_GRAD.getDate() + " de " + MESES_L[BASE_FIN_GRAD.getMonth()] + ". Son " + cl + " días de clase.";
+  const sg = EVENTS.filter(function(x){ return evFor(x) && x.s >= "2027-02-01" && x.s <= "2027-06-30" && x.e >= iso(hoy); });
+  document.getElementById("csigev").innerHTML = sg.length ? sg.map(function(x){ return evHTML(x, true, hoy); }).join("") : '<li class="none">Todavía no hay fechas marcadas.</li>';
+}
+document.getElementById("cprev").addEventListener("click", function(){ if (calM > CAL_MIN){ calM--; renderCal(); } });
+document.getElementById("cnext").addEventListener("click", function(){ if (calM < CAL_MAX){ calM++; renderCal(); } });
+document.getElementById("choy").addEventListener("click", function(){ const t = startOfToday(); calM = Math.max(CAL_MIN, Math.min(CAL_MAX, t.getFullYear() * 12 + t.getMonth())); calSel = iso(t); renderCal(); });
+document.getElementById("cgrid").addEventListener("click", function(e){ const b = e.target.closest("button[data-d]"); if (!b) return; calSel = b.dataset.d; renderCal(); });
 
 function setGroup(g){
   if (GROUPS.indexOf(g) < 0) return;
