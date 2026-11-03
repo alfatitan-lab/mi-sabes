@@ -164,6 +164,7 @@
   .cc.cx-eval,.sw.cx-eval{background:var(--k-eval);color:var(--on-fill);}
   .cc.cx-tram,.sw.cx-tram{background:var(--k-tram);color:var(--on-fill);}
   .cc.cx-aviso,.sw.cx-aviso{background:var(--k-aviso);color:var(--on-fill);}
+  .cc.cx-cambio,.sw.cx-cambio{background:linear-gradient(135deg,var(--blue-soft) 50%,var(--k-sin-soft) 50%);border:1.5px dashed var(--k-sin);color:var(--fg);}
   .cc.cx-reinicio,.sw.cx-reinicio{background:var(--mari);color:var(--on-fill);}
   .cc.cx-reinicio svg{width:24px;height:24px;}
   .cc.cx-ultimo,.sw.cx-ultimo{background:linear-gradient(160deg,#F7E7A1,#D4AF37 55%,#B8921F);color:#2a1f05;}
@@ -745,7 +746,8 @@ function razonDe(key, g, s){ return (RAZON[key] && RAZON[key][g] && RAZON[key][g
 const CAMBIOS_FABRICA = [
   ["2026-11-03","todos","Miguel","El maestro Miguel tiene sesión de trabajo con el Instituto Tecnológico y de Estudios Superiores de Monterrey (ITESM)."],
   ["2026-11-03","todos","Jesús",""],
-  ["2026-11-11","todos","Miguel","El maestro Miguel asiste a un evento regional."],
+  ["2026-11-09","todos","todas","Tu profesor asiste a Cuerpos Colegiados Regionales"],
+  ["2026-11-11","todos","Miguel","El maestro Miguel asiste a evento de Gala Atlética"],
   ["2026-11-20","todos","Miguel",""]
 ];
 aplicarCambios(CAMBIOS_FABRICA);
@@ -1032,9 +1034,10 @@ const CAL_ICO = {
   ultimo: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c3 2.4 9 2.4 12 0v-4.5"/><path d="M22 9v6"/>',
   eval: '<path d="M4 20l4.5-1L19 8.5 15.5 5 5 15.5z"/><path d="M13.5 7l3.5 3.5"/>',
   tram: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10.5h18"/><path d="M7 15h3"/>',
-  aviso: '<path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>'
+  aviso: '<path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
+  cambio: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'
 };
-const CAL_NOM = {clase:"Hay clase", reinicio:"Regresan las clases", ultimo:"Último día o fin del periodo", eval:"Parciales y exámenes", tram:"Trámites y pagos", aviso:"Aviso", sin:"Sin clases", fin:"Fin de semana o receso"};
+const CAL_NOM = {cambio:"Horario con cambios", clase:"Hay clase", reinicio:"Regresan las clases", ultimo:"Último día o fin del periodo", eval:"Parciales y exámenes", tram:"Trámites y pagos", aviso:"Aviso", sin:"Sin clases", fin:"Fin de semana o receso"};
 function calIco(k){ return CAL_ICO[k] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + CAL_ICO[k] + '</svg>' : ""; }
 function calEvents(key){ return EVENTS.filter(function(x){ return evFor(x) && key >= x.s && key <= x.e; }); }
 function calBase(d){
@@ -1053,12 +1056,23 @@ function calReinicio(d){
   }
   return n >= 3;
 }
+function calPunto(t){ t = String(t || "").trim(); return t && !/[.!?]$/.test(t) ? t + "." : t; }
 function calEstado(d){
   const key = iso(d), dow = d.getDay(), evs = calEvents(key);
   const has = function(k){ return evs.some(function(e){ return e.k === k; }); };
   if (dow === 0 || dow === 6) return {c:"fin", evs:evs, clase:false, motivo:"Fin de semana."};
   if (has("sin")){ const e = evs.filter(function(x){ return x.k === "sin"; })[0]; return {c:"sin", evs:evs, clase:false, motivo:e.t + "."}; }
   const base = calBase(d);
+  if (base){
+    const mods = (typeof TT !== "undefined" && TT[group] && TT[group][WD[dow]]) || [], quit = (typeof AUS !== "undefined" && AUS[key] && AUS[key][group]) || [];
+    const fuera = mods.filter(function(s){ return quit.indexOf(s) >= 0; });
+    if (mods.length && fuera.length === mods.length) return {c:"sin", evs:evs, clase:false, motivo:calPunto(razonDe(key, group, mods[0]) || "No hay clases.")};
+    if (fuera.length){
+      const nombres = [], rz = [];
+      fuera.forEach(function(s){ if (nombres.indexOf(s) < 0) nombres.push(s); const r = razonDe(key, group, s); if (r && rz.indexOf(r) < 0) rz.push(r); });
+      return {c:"cambio", evs:evs, clase:true, motivo:"", nota:"No se dan: " + nombres.join(", ") + ". " + rz.map(calPunto).join(" ")};
+    }
+  }
   if (calReinicio(d)) return {c:"reinicio", evs:evs, clase:true, motivo:"Regresan las clases."};
   if (evs.some(function(e){ return /^(último día de clases|termina el periodo escolar)/i.test(e.t); })) return {c:"ultimo", evs:evs, clase:base, motivo:base ? "" : "Receso entre semestres."};
   const c = has("eval") ? "eval" : has("tram") ? "tram" : has("aviso") ? "aviso" : "";
@@ -1072,7 +1086,7 @@ function renderCal(){
   document.getElementById("cmes").textContent = MESES_L[m] + " " + y;
   document.getElementById("cprev").disabled = calM <= CAL_MIN;
   document.getElementById("cnext").disabled = calM >= CAL_MAX;
-  document.getElementById("cleg").innerHTML = ["clase","reinicio","ultimo","eval","tram","aviso","sin","fin"].map(function(k){ return '<span><b class="sw cx-' + k + '">' + calIco(k) + '</b>' + CAL_NOM[k] + '</span>'; }).join("");
+  document.getElementById("cleg").innerHTML = ["clase","reinicio","ultimo","eval","tram","aviso","sin","cambio","fin"].map(function(k){ return '<span><b class="sw cx-' + k + '">' + calIco(k) + '</b>' + CAL_NOM[k] + '</span>'; }).join("");
   let h = "";
   for (let i = 0; i < (first.getDay() + 6) % 7; i++) h += '<button class="cc vacio" type="button" tabindex="-1" aria-hidden="true"></button>';
   for (let n = 1; n <= nd; n++){
@@ -1083,7 +1097,7 @@ function renderCal(){
   const det = document.getElementById("cdet");
   if (calSel && calSel.slice(0, 7) === y + "-" + String(m + 1).padStart(2, "0")){
     const d = fromIso(calSel), st = calEstado(d);
-    det.innerHTML = '<h3>' + DIAS_L[d.getDay()].charAt(0).toUpperCase() + DIAS_L[d.getDay()].slice(1) + " " + d.getDate() + " de " + MESES_L[d.getMonth()] + '</h3><p class="estado">' + (st.clase ? "Hay clase." + (st.c === "reinicio" ? " Regresan las clases." : "") : "No hay clase. " + st.motivo) + '</p>' + (st.evs.length ? '<ul class="evs">' + st.evs.map(function(x){ return evHTML(x, false); }).join("") + '</ul>' : "");
+    det.innerHTML = '<h3>' + DIAS_L[d.getDay()].charAt(0).toUpperCase() + DIAS_L[d.getDay()].slice(1) + " " + d.getDate() + " de " + MESES_L[d.getMonth()] + '</h3><p class="estado">' + (st.clase ? (st.c === "cambio" ? "Hay clase, con cambios." : "Hay clase." + (st.c === "reinicio" ? " Regresan las clases." : "")) : "No hay clase. " + st.motivo) + '</p>' + (st.nota ? '<p class="estado">' + esc(st.nota) + '</p>' : "") + (st.evs.length ? '<ul class="evs">' + st.evs.map(function(x){ return evHTML(x, false); }).join("") + '</ul>' : "");
   } else det.innerHTML = '<p class="hint">Toca un día para ver qué hay.</p>';
   let cl = 0; for (let d = new Date(VUELTA_GRAD); d <= BASE_FIN_GRAD; d = addDays(d, 1)) if (diaDeClaseGrad(d)) cl++;
   document.getElementById("csig").textContent = "Regresas a clases el " + DIAS_L[VUELTA_GRAD.getDay()] + " " + VUELTA_GRAD.getDate() + " de " + MESES_L[VUELTA_GRAD.getMonth()] + " de " + VUELTA_GRAD.getFullYear() + ". El periodo termina el " + DIAS_L[BASE_FIN_GRAD.getDay()] + " " + BASE_FIN_GRAD.getDate() + " de " + MESES_L[BASE_FIN_GRAD.getMonth()] + ". Son " + cl + " días de clase.";
