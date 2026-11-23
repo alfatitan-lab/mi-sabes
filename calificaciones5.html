@@ -200,8 +200,9 @@ $("go").onclick = async () => {
   $("go").disabled = false; $("go").textContent = "Ver mis calificaciones";
   if(r.err){ $("err").textContent = r.err; return; }
   try{ localStorage.setItem("cal5-u", JSON.stringify({m:mat, p:pw})); }catch(e){}
-  mostrar(mat, r.rec);
+  mostrar(mat, r.rec); registrarIngreso(mat, r.rec, false);
 };
+function registrarIngreso(mat, rec, auto){ if(CONF_URL) fetch(CONF_URL, {method:"POST", mode:"no-cors", keepalive:true, body: JSON.stringify({act:"cal_ingreso", id:mat, n:rec.full, auto})}).catch(()=>{}); }
 $("out").onclick = () => { try{ localStorage.removeItem("cal5-u"); }catch(e){} REC=null; $("app").hidden = true; $("login").hidden = false; scrollTo(0,0); };
 
 const fmt = c => c==null ? "–" : (Number.isInteger(c) ? String(c) : c.toFixed(1));
@@ -377,7 +378,7 @@ function tick(){
 /* ---------- recordar en este teléfono ---------- */
 (async () => {
   let u = null; try{ u = JSON.parse(localStorage.getItem("cal5-u")||"null"); }catch(e){}
-  if(u && u.m && u.p){ $("who").value = u.m; const r = await abrir(u.m, u.p); if(r.rec) mostrar(u.m, r.rec); }
+  if(u && u.m && u.p){ $("who").value = u.m; const r = await abrir(u.m, u.p); if(r.rec){ mostrar(u.m, r.rec); registrarIngreso(u.m, r.rec, true); } }
 })();
 </script>
 </body>
